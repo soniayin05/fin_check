@@ -1,6 +1,6 @@
 {
   "scope": "Development only; not held-out results or feature credit. All live dev evaluation batches so far are included.",
-  "unit_tests_passed": 17,
+  "unit_tests_passed": 18,
   "offline_development_passed": 3,
   "runs": [
     {
@@ -538,7 +538,49 @@
     "First batch exposed Microsoft/MSFT alias mismatch; fixed in subsequent batch.",
     "Subsequent batch passed numerical claims but API 429 blocked FY2025 case.",
     "An earlier individual run hit model 404; another exhausted its turn budget on citation mismatch. These failures informed implementation fixes.",
-    "Disclosure search live check hit HTTP 429; retrieval is tested offline, not yet validated as an end-to-end disclosure verdict.",
-    "No baseline comparison or statistical conclusions yet."
-  ]
+    "No baseline comparison or statistical conclusions yet.",
+    "After cooldown, a separate live disclosure check succeeded and cited the exact supporting paragraph. Optional uncomputed zero growth fields in that response prompted a display fix covered by a regression test."
+  ],
+  "disclosure_smoke_test": {
+    "run_id": "20261101T202858737686Z",
+    "claim": "Microsoft disclosed that Azure and other cloud services revenue grew 30% in fiscal 2024.",
+    "status": "complete",
+    "result": {
+      "right_growth_pct": 0,
+      "verdict": "supported",
+      "evidence_ids": [
+        "msft-ar2024-4b47753045da879a"
+      ],
+      "left_growth_pct": 0,
+      "explanation": "Microsoft explicitly disclosed in its FY2024 annual report that 'Azure and other cloud services revenue grew 30% driven by growth in our consumption-based services.'",
+      "sources": {
+        "msft-ar2024-4b47753045da879a": {
+          "id": "msft-ar2024-4b47753045da879a",
+          "company": "MSFT",
+          "year": 2024,
+          "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+          "block": 298,
+          "text": "Server products and cloud services revenue increased $17.8 billion or 22% driven by Azure and other cloud services. Azure and other cloud services revenue grew 30% driven by growth in our consumption-based services. Server products revenue increased 3% driven by continued demand for our hybrid solutions, including Windows Server and SQL Server running in multi-cloud environments.",
+          "score": 8.5
+        }
+      }
+    },
+    "model": "gemini-3.5-flash-lite",
+    "tool_calls": 4,
+    "latency_seconds": 3.5579450000077486,
+    "git_commit": "104732b96b591fcd3a3346e1cdca54279507fe7e",
+    "working_tree_dirty": false,
+    "code_sha256": {
+      "fincheck/__init__.py": "dcc49f5ab992cbc7c16c584c446a60e7783a30033cb93963bbaabdb447a4356e",
+      "fincheck/__main__.py": "26317a9b4ce18d68f3bfb0f053daf3e8a778782e2528d0132293fbac78782ba6",
+      "fincheck/agent.py": "d2429f528840247e16959e041c4a6c5504d8258a6dab5c6a8028f03d905234ff",
+      "fincheck/ingest.py": "05a695328ea1919fb4e8aa48c99444071e96f78f6b24115b83aa340b8e273049",
+      "fincheck/model.py": "d95ca15aa0c72bd61d97bbba77b93b6a8b04e3249d1f824a3ced41323137d801",
+      "fincheck/retrieval.py": "ffe7ec421f5f5eb556b8546a36338e3b5ce982e450f83a98c3a76ddaab6b7ced",
+      "fincheck/tools.py": "8b6af6288b8f98a4d66ae4a2d99067ce5bfaa6e6af58739ba69e5749c8689c5d"
+    },
+    "facts_sha256": "36a7e94f3d0da47757a1685a098703d58f7f01c880bd7aa7c407bb99e0525063",
+    "passages_sha256": "7d8fce9ae14254ad6abde7939e7724738fe73ee5a0124eabbe16852b42600ab9",
+    "note": "Actual pre-display-fix output retained, including extraneous zero fields; this is a smoke test, not a scored gold-label case."
+  }
 }

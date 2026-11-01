@@ -161,7 +161,7 @@ class Agent:
                                     raise ValueError("Return both calculated growth rates and their sources")
                         source_ids = {seen[k].get("source_id", k) for k in args["evidence_ids"]}
                         output = dict(args, sources={key: seen[key] for key in sorted(source_ids)})
-                        if args["verdict"] == "insufficient_evidence":
+                        if not calculations or args["verdict"] == "insufficient_evidence":
                             output.pop("left_growth_pct", None)
                             output.pop("right_growth_pct", None)
                         if calculations and args["verdict"] != "insufficient_evidence":

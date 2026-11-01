@@ -81,6 +81,17 @@ class AgentTests(unittest.TestCase):
         self.assertEqual(run["status"], "error")
         self.assertNotIn("verdict", run["result"])
 
+    def test_disclosure_does_not_display_uncomputed_growth(self):
+        search = {"name": "search_filings", "args": {"query": "Azure", "company": "MSFT", "year": 2024}}
+        final = {"name": "submit_verdict", "args": {"verdict": "supported", "explanation": "Source states this.",
+                 "evidence_ids": ["passage-1"], "left_growth_pct": 0, "right_growth_pct": 0}}
+        agent = self.agent([PLAN, search, final])
+        agent.passages.passages = [{"id": "passage-1", "company": "MSFT", "year": 2024,
+                                   "text": "Azure and other cloud services revenue grew 30%."}]
+        run = agent.run("Azure revenue grew 30%.")
+        self.assertEqual(run["status"], "complete")
+        self.assertNotIn("left_growth_pct", run["result"])
+
     def test_arguments_cannot_supply_gold_or_bool_year(self):
         for args in [dict(COMPARE["args"], expected="supported"), dict(COMPARE["args"], year=True)]:
             with self.assertRaises(ValueError):
