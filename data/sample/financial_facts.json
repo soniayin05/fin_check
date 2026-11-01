@@ -1,0 +1,23 @@
+{
+  "description": "Small manually transcribed real-data extract, not a full filing snapshot or a complete financial database.",
+  "sources": {
+    "msft-ar2024-income": {
+      "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+      "section": "Income Statements: Total revenue; years ended June 30, 2024 and 2023; amounts in millions",
+      "retrieved_on": "2026-10-25",
+      "method": "Manually transcribed and checked against the annual-report web table"
+    },
+    "msft-ar2024-cashflow": {
+      "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+      "section": "Cash Flows Statements: Net cash from operations; years ended June 30, 2024 and 2023; amounts in millions",
+      "retrieved_on": "2026-10-25",
+      "method": "Manually transcribed and checked against the annual-report web table"
+    }
+  },
+  "observations": [
+    {"id":"msft-revenue-2023","company":"MSFT","metric":"revenue","value":211915,"unit":"USD_millions","fiscal_year":2023,"period_start":"2022-07-01","period_end":"2023-06-30","source_id":"msft-ar2024-income"},
+    {"id":"msft-revenue-2024","company":"MSFT","metric":"revenue","value":245122,"unit":"USD_millions","fiscal_year":2024,"period_start":"2023-07-01","period_end":"2024-06-30","source_id":"msft-ar2024-income"},
+    {"id":"msft-cfo-2023","company":"MSFT","metric":"operating_cash_flow","value":87582,"unit":"USD_millions","fiscal_year":2023,"period_start":"2022-07-01","period_end":"2023-06-30","source_id":"msft-ar2024-cashflow"},
+    {"id":"msft-cfo-2024","company":"MSFT","metric":"operating_cash_flow","value":118548,"unit":"USD_millions","fiscal_year":2024,"period_start":"2023-07-01","period_end":"2024-06-30","source_id":"msft-ar2024-cashflow"}
+  ]
+}

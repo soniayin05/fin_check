@@ -1,0 +1,29 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python and local environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+.DS_Store
+.idea/
+
+# Raw downloads, private user documents, and unreviewed traces
+data/raw/
+data/uploads/
+data/indexes/
+artifacts/local/
+*.sqlite
+*.sqlite3
+

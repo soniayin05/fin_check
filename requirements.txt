@@ -1,0 +1,2 @@
+# No third-party runtime dependencies for the check-in prototype.
+# Uses Python 3.10+ standard library and Gemini REST API.

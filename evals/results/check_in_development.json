@@ -1,0 +1,544 @@
+{
+  "scope": "Development only; not held-out results or feature credit. All live dev evaluation batches so far are included.",
+  "unit_tests_passed": 17,
+  "offline_development_passed": 3,
+  "runs": [
+    {
+      "run_id": "20261101T202637056408Z",
+      "passed": 2,
+      "total": 3,
+      "cases": [
+        {
+          "case_id": "dev-001",
+          "passed": false,
+          "status": "complete",
+          "model": "gemini-3.5-flash-lite",
+          "result": {
+            "explanation": "The loaded dataset does not contain the necessary historical observations for Microsoft revenue and operating cash flow for both FY2023 and FY2024 to verify the comparative growth claim using the required compare_growth tool.",
+            "left_growth_pct": 0,
+            "verdict": "insufficient_evidence",
+            "evidence_ids": [],
+            "right_growth_pct": 0,
+            "sources": {}
+          },
+          "latency_seconds": 3.6091191249433905,
+          "tool_calls": 4,
+          "model_usage": [
+            {
+              "promptTokenCount": 667,
+              "candidatesTokenCount": 37,
+              "totalTokenCount": 704,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 667
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 743,
+              "candidatesTokenCount": 43,
+              "totalTokenCount": 786,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 743
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 832,
+              "candidatesTokenCount": 43,
+              "totalTokenCount": 875,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 832
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 894,
+              "candidatesTokenCount": 91,
+              "totalTokenCount": 985,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 894
+                }
+              ],
+              "serviceTier": "standard"
+            }
+          ]
+        },
+        {
+          "case_id": "dev-002",
+          "passed": true,
+          "status": "complete",
+          "model": "gemini-3.5-flash-lite",
+          "result": {
+            "explanation": "operating_cash_flow grew 35.36%; revenue grew 15.67%. The claim that the first grew faster is supported.",
+            "right_growth_pct": 15.6699620130713,
+            "left_growth_pct": 35.3565801192026,
+            "evidence_ids": [
+              "msft-cfo-2023",
+              "msft-cfo-2024",
+              "msft-revenue-2023",
+              "msft-revenue-2024"
+            ],
+            "verdict": "supported",
+            "sources": {
+              "msft-ar2024-cashflow": {
+                "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+                "section": "Cash Flows Statements: Net cash from operations; years ended June 30, 2024 and 2023; amounts in millions",
+                "retrieved_on": "2026-10-25",
+                "method": "Manually transcribed and checked against the annual-report web table"
+              },
+              "msft-ar2024-income": {
+                "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+                "section": "Income Statements: Total revenue; years ended June 30, 2024 and 2023; amounts in millions",
+                "retrieved_on": "2026-10-25",
+                "method": "Manually transcribed and checked against the annual-report web table"
+              }
+            },
+            "model_explanation": "In FY2024, Microsoft's operating cash flow grew by 35.36% (from $87,582 million in FY2023 to $118,548 million in FY2024), whereas revenue grew by 15.67% (from $211,915 million in FY2023 to $245,122 million in FY2024). Therefore, operating cash flow grew faster than revenue.",
+            "observations": [
+              {
+                "id": "msft-cfo-2023",
+                "company": "MSFT",
+                "metric": "operating_cash_flow",
+                "value": 87582,
+                "unit": "USD_millions",
+                "fiscal_year": 2023,
+                "period_start": "2022-07-01",
+                "period_end": "2023-06-30",
+                "source_id": "msft-ar2024-cashflow"
+              },
+              {
+                "id": "msft-cfo-2024",
+                "company": "MSFT",
+                "metric": "operating_cash_flow",
+                "value": 118548,
+                "unit": "USD_millions",
+                "fiscal_year": 2024,
+                "period_start": "2023-07-01",
+                "period_end": "2024-06-30",
+                "source_id": "msft-ar2024-cashflow"
+              },
+              {
+                "id": "msft-revenue-2023",
+                "company": "MSFT",
+                "metric": "revenue",
+                "value": 211915,
+                "unit": "USD_millions",
+                "fiscal_year": 2023,
+                "period_start": "2022-07-01",
+                "period_end": "2023-06-30",
+                "source_id": "msft-ar2024-income"
+              },
+              {
+                "id": "msft-revenue-2024",
+                "company": "MSFT",
+                "metric": "revenue",
+                "value": 245122,
+                "unit": "USD_millions",
+                "fiscal_year": 2024,
+                "period_start": "2023-07-01",
+                "period_end": "2024-06-30",
+                "source_id": "msft-ar2024-income"
+              }
+            ]
+          },
+          "latency_seconds": 3.3255370419938117,
+          "tool_calls": 3,
+          "model_usage": [
+            {
+              "promptTokenCount": 667,
+              "candidatesTokenCount": 35,
+              "totalTokenCount": 702,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 667
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 739,
+              "candidatesTokenCount": 44,
+              "totalTokenCount": 783,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 739
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 1566,
+              "candidatesTokenCount": 233,
+              "totalTokenCount": 1799,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 1566
+                }
+              ],
+              "serviceTier": "standard"
+            }
+          ]
+        },
+        {
+          "case_id": "dev-003",
+          "passed": true,
+          "status": "complete",
+          "model": "gemini-3.5-flash-lite",
+          "result": {
+            "right_growth_pct": 0,
+            "explanation": "The available dataset and filings cover up to fiscal year 2024. Data for FY2025 is missing from the dataset.",
+            "evidence_ids": [],
+            "left_growth_pct": 0,
+            "verdict": "insufficient_evidence",
+            "sources": {}
+          },
+          "latency_seconds": 3.297135042026639,
+          "tool_calls": 4,
+          "model_usage": [
+            {
+              "promptTokenCount": 667,
+              "candidatesTokenCount": 42,
+              "totalTokenCount": 709,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 667
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 753,
+              "candidatesTokenCount": 44,
+              "totalTokenCount": 797,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 753
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 844,
+              "candidatesTokenCount": 39,
+              "totalTokenCount": 883,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 844
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 3903,
+              "candidatesTokenCount": 76,
+              "totalTokenCount": 3979,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 3903
+                }
+              ],
+              "serviceTier": "standard"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": "20261101T202701779089Z",
+      "passed": 2,
+      "total": 3,
+      "cases": [
+        {
+          "case_id": "dev-001",
+          "passed": true,
+          "status": "complete",
+          "model": "gemini-3.5-flash-lite",
+          "result": {
+            "right_growth_pct": 35.3565801192026,
+            "verdict": "contradicted",
+            "left_growth_pct": 15.6699620130713,
+            "evidence_ids": [
+              "msft-revenue-2023",
+              "msft-revenue-2024",
+              "msft-cfo-2023",
+              "msft-cfo-2024"
+            ],
+            "explanation": "revenue grew 15.67%; operating_cash_flow grew 35.36%. The claim that the first grew faster is contradicted.",
+            "sources": {
+              "msft-ar2024-cashflow": {
+                "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+                "section": "Cash Flows Statements: Net cash from operations; years ended June 30, 2024 and 2023; amounts in millions",
+                "retrieved_on": "2026-10-25",
+                "method": "Manually transcribed and checked against the annual-report web table"
+              },
+              "msft-ar2024-income": {
+                "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+                "section": "Income Statements: Total revenue; years ended June 30, 2024 and 2023; amounts in millions",
+                "retrieved_on": "2026-10-25",
+                "method": "Manually transcribed and checked against the annual-report web table"
+              }
+            },
+            "model_explanation": "In FY2024, Microsoft's revenue grew by 15.67% (from $211,915 million in FY2023 to $245,122 million in FY2024), while operating cash flow grew by 35.36% (from $87,582 million in FY2023 to $118,548 million in FY2024). Therefore, operating cash flow grew faster than revenue, contradicting the claim that revenue grew faster than operating cash flow.",
+            "observations": [
+              {
+                "id": "msft-revenue-2023",
+                "company": "MSFT",
+                "metric": "revenue",
+                "value": 211915,
+                "unit": "USD_millions",
+                "fiscal_year": 2023,
+                "period_start": "2022-07-01",
+                "period_end": "2023-06-30",
+                "source_id": "msft-ar2024-income"
+              },
+              {
+                "id": "msft-revenue-2024",
+                "company": "MSFT",
+                "metric": "revenue",
+                "value": 245122,
+                "unit": "USD_millions",
+                "fiscal_year": 2024,
+                "period_start": "2023-07-01",
+                "period_end": "2024-06-30",
+                "source_id": "msft-ar2024-income"
+              },
+              {
+                "id": "msft-cfo-2023",
+                "company": "MSFT",
+                "metric": "operating_cash_flow",
+                "value": 87582,
+                "unit": "USD_millions",
+                "fiscal_year": 2023,
+                "period_start": "2022-07-01",
+                "period_end": "2023-06-30",
+                "source_id": "msft-ar2024-cashflow"
+              },
+              {
+                "id": "msft-cfo-2024",
+                "company": "MSFT",
+                "metric": "operating_cash_flow",
+                "value": 118548,
+                "unit": "USD_millions",
+                "fiscal_year": 2024,
+                "period_start": "2023-07-01",
+                "period_end": "2024-06-30",
+                "source_id": "msft-ar2024-cashflow"
+              }
+            ]
+          },
+          "latency_seconds": 2.7256657499819994,
+          "tool_calls": 3,
+          "model_usage": [
+            {
+              "promptTokenCount": 667,
+              "candidatesTokenCount": 37,
+              "totalTokenCount": 704,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 667
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 743,
+              "candidatesTokenCount": 43,
+              "totalTokenCount": 786,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 743
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 1570,
+              "candidatesTokenCount": 246,
+              "totalTokenCount": 1816,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 1570
+                }
+              ],
+              "serviceTier": "standard"
+            }
+          ]
+        },
+        {
+          "case_id": "dev-002",
+          "passed": true,
+          "status": "complete",
+          "model": "gemini-3.5-flash-lite",
+          "result": {
+            "verdict": "supported",
+            "left_growth_pct": 35.3565801192026,
+            "right_growth_pct": 15.6699620130713,
+            "evidence_ids": [
+              "msft-cfo-2023",
+              "msft-cfo-2024",
+              "msft-revenue-2023",
+              "msft-revenue-2024",
+              "msft-ar2024-cashflow",
+              "msft-ar2024-income"
+            ],
+            "explanation": "operating_cash_flow grew 35.36%; revenue grew 15.67%. The claim that the first grew faster is supported.",
+            "sources": {
+              "msft-ar2024-cashflow": {
+                "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+                "section": "Cash Flows Statements: Net cash from operations; years ended June 30, 2024 and 2023; amounts in millions",
+                "retrieved_on": "2026-10-25",
+                "method": "Manually transcribed and checked against the annual-report web table"
+              },
+              "msft-ar2024-income": {
+                "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+                "section": "Income Statements: Total revenue; years ended June 30, 2024 and 2023; amounts in millions",
+                "retrieved_on": "2026-10-25",
+                "method": "Manually transcribed and checked against the annual-report web table"
+              }
+            },
+            "model_explanation": "In FY2024, Microsoft's operating cash flow grew by 35.36% (from $87,582 million in FY2023 to $118,548 million in FY2024), while revenue grew by 15.67% (from $211,915 million in FY2023 to $245,122 million in FY2024). Therefore, operating cash flow grew strictly faster than revenue in FY2024.",
+            "observations": [
+              {
+                "id": "msft-cfo-2023",
+                "company": "MSFT",
+                "metric": "operating_cash_flow",
+                "value": 87582,
+                "unit": "USD_millions",
+                "fiscal_year": 2023,
+                "period_start": "2022-07-01",
+                "period_end": "2023-06-30",
+                "source_id": "msft-ar2024-cashflow"
+              },
+              {
+                "id": "msft-cfo-2024",
+                "company": "MSFT",
+                "metric": "operating_cash_flow",
+                "value": 118548,
+                "unit": "USD_millions",
+                "fiscal_year": 2024,
+                "period_start": "2023-07-01",
+                "period_end": "2024-06-30",
+                "source_id": "msft-ar2024-cashflow"
+              },
+              {
+                "id": "msft-revenue-2023",
+                "company": "MSFT",
+                "metric": "revenue",
+                "value": 211915,
+                "unit": "USD_millions",
+                "fiscal_year": 2023,
+                "period_start": "2022-07-01",
+                "period_end": "2023-06-30",
+                "source_id": "msft-ar2024-income"
+              },
+              {
+                "id": "msft-revenue-2024",
+                "company": "MSFT",
+                "metric": "revenue",
+                "value": 245122,
+                "unit": "USD_millions",
+                "fiscal_year": 2024,
+                "period_start": "2023-07-01",
+                "period_end": "2024-06-30",
+                "source_id": "msft-ar2024-income"
+              }
+            ]
+          },
+          "latency_seconds": 2.656733957817778,
+          "tool_calls": 3,
+          "model_usage": [
+            {
+              "promptTokenCount": 667,
+              "candidatesTokenCount": 41,
+              "totalTokenCount": 708,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 667
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 751,
+              "candidatesTokenCount": 44,
+              "totalTokenCount": 795,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 751
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            {
+              "promptTokenCount": 1578,
+              "candidatesTokenCount": 267,
+              "totalTokenCount": 1845,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 1578
+                }
+              ],
+              "serviceTier": "standard"
+            }
+          ]
+        },
+        {
+          "case_id": "dev-003",
+          "passed": false,
+          "status": "error",
+          "model": "gemini-3.5-flash-lite",
+          "result": {
+            "error": "Gemini HTTP 429. Check key, enabled API, model access and quota."
+          },
+          "latency_seconds": 3.296334584010765,
+          "tool_calls": 1,
+          "model_usage": [
+            {
+              "promptTokenCount": 667,
+              "candidatesTokenCount": 53,
+              "totalTokenCount": 720,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 667
+                }
+              ],
+              "serviceTier": "standard"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "First batch exposed Microsoft/MSFT alias mismatch; fixed in subsequent batch.",
+    "Subsequent batch passed numerical claims but API 429 blocked FY2025 case.",
+    "An earlier individual run hit model 404; another exhausted its turn budget on citation mismatch. These failures informed implementation fixes.",
+    "Disclosure search live check hit HTTP 429; retrieval is tested offline, not yet validated as an end-to-end disclosure verdict.",
+    "No baseline comparison or statistical conclusions yet."
+  ]
+}
