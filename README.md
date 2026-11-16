@@ -45,8 +45,12 @@ Without an API key, run `python -m fincheck demo` for the deterministic calculat
 
 | File | Responsibility |
 | --- | --- |
-| `fincheck/tools.py` | Reviewed financial observations, annual-period/unit checks, arithmetic |
-| `fincheck/ingest.py` | Download/cache the annual report and record source hashes |
+| `fincheck/tools.py` | Observations, annual-period/unit checks, growth arithmetic |
+| `fincheck/sec.py` | SEC client: declared User-Agent, throttling, retries |
+| `fincheck/facts.py` | Normalize SEC Company Facts into annual observations with tag, accession and filing date |
+| `fincheck/ratios.py` | 41 CFA-list ratios plus EBITDA, free cash flow and net debt, with formula, inputs and assumptions |
+| `fincheck/filings.py` | Select 10-K filings and earnings releases to archive |
+| `fincheck/ingest.py` | Download/cache sources, record hashes, build facts and the passage index |
 | `fincheck/retrieval.py` | Parse passages, preserve tables, filter and rank keyword matches |
 | `fincheck/model.py` | Gemini REST requests, local configuration, bounded retries |
 | `fincheck/agent.py` | Plan/tool loop, argument checks, evidence IDs, budgets, trace saving |
@@ -55,13 +59,14 @@ Without an API key, run `python -m fincheck demo` for the deterministic calculat
 | `docs/CHECK_IN.md` | Wednesday demonstration and submission checklist |
 | `docs/START_HERE.md` | What to understand and implement next |
 | `docs/EVALUATION.md` | Final evaluation design |
+| `docs/DATA.md` | SEC data pipeline, ratio rules, and what to verify by hand |
 
 ## Current boundaries
 
 - Numeric support is MSFT revenue and operating cash flow for FY2023/2024 only. Figures are a manually reviewed extract from the [2024 annual report](https://www.microsoft.com/investor/reports/ar24/index.html), not automatically extracted XBRL.
 - Retrieval uses the full annual report and simple keyword ranking. It is not the final embedding/hybrid retrieval feature.
 - A citation must have been retrieved, and returned growth rates must match the calculation tool. These checks do not prove that the model interpreted every qualifier correctly. Disclosure judgments still need labeled evaluation.
-- SEC Company Facts download was blocked by HTTP 403 in this environment. `prepare-data --include-sec` attempts the download explicitly; normalization is still pending. There is currently one external report, not two independent sources.
+- `prepare-data --include-sec` archives SEC Company Facts, 10-K filings and earnings releases for Microsoft, Alphabet and Apple and normalizes the numbers (see `docs/DATA.md`). This path is covered by tests against synthetic payloads only. Its output must be reviewed against the filings before it is used as evidence, and the agent's tools do not use it yet.
 - No reviewer agent, memo segmentation, GUI, baseline comparison, statistical evaluation, or completed feature credit yet.
 - Traces record model usage when supplied and leave dollar cost unavailable until pricing is configured. Raw traces include user claims and filing text; review them before sharing.
 

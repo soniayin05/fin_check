@@ -8,40 +8,87 @@ from pathlib import Path
 import subprocess
 from time import perf_counter
 
-from .tools import FactStore, compare_growth
+from .tools import FactStore, compare_growth, normalize_company
 from .agent import Agent, save_run
+from .facts import METRICS, coverage_table
 from .ingest import prepare
 from .model import Gemini, ModelError, load_env
+from .ratios import RATIOS, UnknownRatio, compute_ratio, growth
 from .retrieval import PassageStore
+from .sec import SecError
 
 ROOT = Path(__file__).resolve().parent.parent
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="FinCheck: audit a financial claim against filing evidence")
-    parser.add_argument("command", choices=["demo", "eval-dev", "prepare-data", "search", "check", "eval-agent-dev"])
+    parser.add_argument("command", choices=["demo", "eval-dev", "prepare-data", "search", "check", "eval-agent-dev",
+                                            "facts-report", "ratio"])
     parser.add_argument("text", nargs="?", help="Claim for check, or keywords for search")
-    parser.add_argument("--include-sec", action="store_true", help="Also archive SEC Company Facts (normalization pending)")
+    parser.add_argument("--include-sec", action="store_true",
+                        help="Also archive SEC Company Facts, 10-K filings and earnings releases")
+    parser.add_argument("--company", default="MSFT", help="Ticker or company name (search, ratio, facts-report)")
+    parser.add_argument("--year", type=int, default=2024, help="Fiscal year (search, ratio, facts-report)")
+    parser.add_argument("--ratio", default="all", help="Ratio name, <metric>_growth, or 'all'")
+    parser.add_argument("--source-type", help="Restrict search to 10-K, earnings_release or annual_report_web")
     parser.add_argument("--facts", type=Path, default=ROOT / "data/sample/financial_facts.json")
     parser.add_argument("--cases", type=Path, default=ROOT / "evals/dev/claims.jsonl")
     args = parser.parse_args()
     load_env(ROOT)
     if args.command == "prepare-data":
         try:
-            print(json.dumps(prepare(ROOT, args.include_sec), indent=2))
-            return 0
-        except (OSError, ValueError) as error:
+            result = prepare(ROOT, args.include_sec)
+        except (SecError, ValueError) as error:
+            print(f"Data preparation failed: {error}")
+            return 1
+        except OSError as error:
             print(f"Data preparation failed: {type(error).__name__}. Check source access and cached files.")
             return 1
+        table = result.get("sec", {}).pop("coverage_table", None)
+        print(json.dumps(result, indent=2))
+        if table:
+            print(table)
+        return 0
+    if args.command == "facts-report":
+        coverage_path = ROOT / "data/facts/coverage.json"
+        if not coverage_path.exists():
+            parser.error("Run prepare-data --include-sec first")
+        coverage = json.loads(coverage_path.read_text())["coverage"]
+        print(coverage_table(coverage))
+        company = normalize_company(args.company)
+        print(f"\nValues to verify by hand for {company} FY{args.year} (change with --company / --year):")
+        for row in coverage:
+            if (row["company"], row["fiscal_year"]) == (company, args.year):
+                if row["status"] == "ok":
+                    flag = "  RESTATED" if row.get("restated") else ""
+                    print(f"  {row['metric']:<28}{row['value']:>20,} {row['unit']:<11}{row['tag']}  [{row['accession']}]{flag}")
+                else:
+                    print(f"  {row['metric']:<28}{row['status'].upper():>20} {row.get('detail', '')}")
+        return 0
     passages = PassageStore(ROOT / "data/indexes/passages.json")
     if args.command == "search":
         if not args.text:
             parser.error("search requires quoted keywords")
         if not passages.passages:
             parser.error("Run prepare-data before searching")
-        print(json.dumps(passages.search(args.text), indent=2))
+        print(json.dumps(passages.search(args.text, args.company, args.year, args.source_type), indent=2))
         return 0
     store = FactStore(args.facts)
+    if args.command == "ratio":
+        try:
+            if args.ratio != "all":
+                metric = args.ratio[:-len("_growth")] if args.ratio.endswith("_growth") else None
+                result = (growth(store, args.company, args.year, metric) if metric in METRICS
+                          else compute_ratio(store, args.company, args.year, args.ratio))
+                print(json.dumps(result, indent=2))
+                return 0 if result["status"] == "ok" else 1
+            for name, (number, label, unit, _, _) in RATIOS.items():
+                result = compute_ratio(store, args.company, args.year, name)
+                shown = f"{result['value']:,.4f} {unit}" if result["status"] == "ok" else f"n/a ({result['reason']})"
+                print(f"{str(number or '-'):>3} {label:<46} {shown}")
+            return 0
+        except UnknownRatio as error:
+            parser.error(str(error))
     if args.command in {"check", "eval-agent-dev"}:
         try:
             agent = Agent(store, passages, Gemini())

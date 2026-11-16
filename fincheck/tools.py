@@ -15,9 +15,19 @@ class EvidenceError(ValueError):
     """Evidence is missing, ambiguous, or unsuitable for this calculation."""
 
 
+COMPANY_ALIASES = {
+    "MSFT": {"msft", "microsoft", "microsoft corporation", "microsoft corp"},
+    "GOOGL": {"googl", "goog", "google", "alphabet", "alphabet inc", "alphabet inc. (google)"},
+    "AAPL": {"aapl", "apple", "apple inc", "apple computer"},
+}
+
+
 def normalize_company(company: str) -> str:
     name = company.strip().casefold().rstrip(".")
-    return "MSFT" if name in {"msft", "microsoft", "microsoft corporation", "microsoft corp"} else company.strip().upper()
+    for ticker, aliases in COMPANY_ALIASES.items():
+        if name in aliases:
+            return ticker
+    return company.strip().upper()
 
 
 @dataclass(frozen=True)
@@ -31,14 +41,28 @@ class Observation:
     period_start: str
     period_end: str
     source_id: str
+    # "duration" = a fiscal-year flow (income statement, cash flow).
+    # "instant" = a balance at fiscal year-end (balance sheet); start == end.
+    period_type: str = "duration"
+    tag: str | None = None          # XBRL concept the value came from
+    accession: str | None = None    # SEC accession number of the filing used
+    form: str | None = None
+    filed: str | None = None
+    restated: bool = False          # an earlier filing reported a different value
 
     def validate_annual(self) -> None:
+        if not isfinite(self.value):
+            raise EvidenceError(f"{self.id}: value must be finite")
+        if self.period_type == "instant":
+            if self.period_start != self.period_end:
+                raise EvidenceError(f"{self.id}: an instant needs one balance date")
+            return
+        if self.period_type != "duration":
+            raise EvidenceError(f"{self.id}: unknown period type {self.period_type}")
         days = (date.fromisoformat(self.period_end)
                 - date.fromisoformat(self.period_start)).days + 1
         if not 350 <= days <= 380:
             raise EvidenceError(f"{self.id}: expected an annual period, got {days} days")
-        if not isfinite(self.value):
-            raise EvidenceError(f"{self.id}: value must be finite")
 
 
 class FactStore:
@@ -63,6 +87,11 @@ class FactStore:
         rows[0].validate_annual()
         return rows[0]
 
+    def known_metrics(self, company: str | None = None) -> list[str]:
+        company = normalize_company(company) if company else None
+        return sorted({row.metric for row in self.observations
+                       if company is None or row.company == company})
+
     def read_source(self, source_id: str) -> dict:
         if source_id not in self.sources:
             raise EvidenceError(f"Unknown source: {source_id}")
@@ -78,10 +107,18 @@ def calculate_growth(prior: Observation, current: Observation) -> float:
         raise EvidenceError("Company, metric, or unit mismatch")
     if current.fiscal_year != prior.fiscal_year + 1:
         raise EvidenceError("Expected consecutive fiscal years")
-    gap = (date.fromisoformat(current.period_start)
-           - date.fromisoformat(prior.period_end)).days
-    if gap != 1:
-        raise EvidenceError("Annual periods must be consecutive and non-overlapping")
+    if prior.period_type != current.period_type:
+        raise EvidenceError("Cannot compare a balance with a flow")
+    if current.period_type == "instant":
+        apart = (date.fromisoformat(current.period_end)
+                 - date.fromisoformat(prior.period_end)).days
+        if not 350 <= apart <= 380:
+            raise EvidenceError("Balance dates must be one fiscal year apart")
+    else:
+        gap = (date.fromisoformat(current.period_start)
+               - date.fromisoformat(prior.period_end)).days
+        if gap != 1:
+            raise EvidenceError("Annual periods must be consecutive and non-overlapping")
     if prior.value <= 0:
         raise EvidenceError("Zero/negative-base growth requires explicit interpretation")
     return (current.value / prior.value - 1) * 100

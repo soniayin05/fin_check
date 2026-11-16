@@ -30,6 +30,7 @@ Done means: one natural-language claim is checked against real runtime sources, 
 - Implement `fincheck/workflow.py` using LangGraph once the ordinary tools work. Pin compatible versions in a clean environment.
 - Shared state: original claim, plan, retrieved observations/passages, draft, reviewer issues, repair count, tool count, final status.
 - Coordinator -> researcher -> reviewer -> finalize, or a bounded repair loop. The reviewer must inspect original evidence, not merely agree with the draft.
+- Enforce each agent's role through explicit tool and state permissions, not only its prompt or name. The coordinator may write the plan and routing decision; the evidence agent may use search, source-reading, and calculation tools; the reviewer may read the claim, draft, and original evidence and write review issues; and the finalizer may submit the verdict from approved evidence. Do not give every agent the full tool list by default.
 - Handle one worker failure explicitly. Start with two repair rounds, twelve total tool calls per claim, and a shared memo-wide budget (not twelve fresh calls for every agent).
 - Implement the fixed retrieval-and-answer baseline and the single-agent-with-all-tools comparison. Use the same sources and comparable total budgets.
 - Run the first real agent development evaluation. Any feature changes need instructor approval by November 13.
