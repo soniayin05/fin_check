@@ -14,6 +14,7 @@ VALUES = {  # (FY2023, FY2024) simple numbers so expected ratios can be checked 
     "preferred_dividends": (0, 0), "eps_basic": (2.32, 2.8), "eps_diluted": (2.3, 2.75),
     "weighted_shares_basic": (100, 100), "weighted_shares_diluted": (101, 102),
     "operating_cash_flow": (310, 400), "capex": (90, 100), "depreciation_amortization": (50, 60),
+    "depreciation": (35, 40), "amortization_intangibles": (10, 15), "finance_lease_amortization": (4, 5),
     "dividends_paid": (58, 70), "debt_issued": (0, 50), "debt_repaid": (20, 30),
     "short_term_debt_net_change": (0, 5), "interest_paid": (9, 11), "lease_payments": (20, 24),
     "cash": (100, 150), "short_term_investments": (50, 50), "receivables": (100, 140),
@@ -120,6 +121,18 @@ class RatioTests(unittest.TestCase):
         derived = compute_ratio(store(skip=("gross_profit",)), "TEST", 2024, "gross_margin")
         self.assertAlmostEqual(derived["value"], 60.0)
         self.assertTrue(any("revenue minus cost" in note for note in derived["assumptions"]))
+
+    def test_ebitda_falls_back_to_components_and_says_so(self):
+        result = compute_ratio(store(skip=("depreciation_amortization",)), "TEST", 2024, "ebitda")
+        self.assertAlmostEqual(result["value"], 360 + 40 + 15 + 5)
+        self.assertTrue(any("D&A = depreciation" in note for note in result["assumptions"]))
+        only_depreciation = compute_ratio(store(skip=("depreciation_amortization", "amortization_intangibles",
+                                                      "finance_lease_amortization")), "TEST", 2024, "ebitda")
+        self.assertAlmostEqual(only_depreciation["value"], 400)
+        self.assertEqual(compute_ratio(store(skip=("depreciation_amortization", "depreciation")), "TEST", 2024,
+                                       "ebitda")["status"], "insufficient_evidence")
+        direct = compute_ratio(self.store, "TEST", 2024, "ebitda")
+        self.assertFalse(any("D&A =" in note for note in direct["assumptions"]))
 
     def test_required_input_missing_and_zero_denominator(self):
         missing = compute_ratio(store(skip=("long_term_debt_noncurrent",)), "TEST", 2024, "debt_to_equity")

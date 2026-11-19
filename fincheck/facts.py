@@ -56,11 +56,17 @@ METRICS: dict[str, tuple[str, str, list[str]]] = {
     "depreciation_amortization": (D, "USD", [
         "DepreciationDepletionAndAmortization", "DepreciationAmortizationAndOther",
         "DepreciationAndAmortization", "DepreciationAmortizationAndAccretionNet"]),
+    # Components, for companies whose combined D&A line uses a custom tag that
+    # Company Facts does not include (Microsoft) or that tag only depreciation (Alphabet).
+    "depreciation": (D, "USD", ["Depreciation"]),
+    "amortization_intangibles": (D, "USD", ["AmortizationOfIntangibleAssets"]),
+    "finance_lease_amortization": (D, "USD", ["FinanceLeaseRightOfUseAssetAmortization"]),
     "dividends_paid": (D, "USD", ["PaymentsOfDividendsCommonStock", "PaymentsOfDividends"]),
     "debt_issued": (D, "USD", ["ProceedsFromIssuanceOfLongTermDebt", "ProceedsFromIssuanceOfDebt",
-                               "ProceedsFromDebtNetOfIssuanceCosts"]),
+                               "ProceedsFromDebtNetOfIssuanceCosts", "ProceedsFromDebtMaturingInMoreThanThreeMonths"]),
     "debt_repaid": (D, "USD", ["RepaymentsOfLongTermDebt", "RepaymentsOfDebt",
-                               "RepaymentsOfDebtAndCapitalLeaseObligations"]),
+                               "RepaymentsOfDebtAndCapitalLeaseObligations",
+                               "RepaymentsOfDebtMaturingInMoreThanThreeMonths"]),
     "short_term_debt_net_change": (D, "USD", [
         "ProceedsFromRepaymentsOfCommercialPaper", "ProceedsFromRepaymentsOfShortTermDebt",
         "ProceedsFromRepaymentsOfShortTermDebtMaturingInThreeMonthsOrLess"]),

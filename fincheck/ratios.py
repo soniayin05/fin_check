@@ -74,6 +74,18 @@ def gross_profit(i: Inputs) -> float:
         return i.v("revenue") - i.v("cost_of_revenue")
 
 
+def depreciation_amortization(i: Inputs) -> float:
+    try:
+        return i.v("depreciation_amortization")
+    except EvidenceError:
+        pass
+    total = i.v("depreciation") + i.opt("amortization_intangibles") + i.opt("finance_lease_amortization")
+    i.assumptions.append("D&A = depreciation + amortization of intangibles + finance lease amortization; the "
+                         "company's combined cash-flow line is not tagged in SEC Company Facts, so this can "
+                         "differ slightly from the reported line")
+    return total
+
+
 def ebit(i: Inputs) -> float:
     return i.v("pretax_income") + i.v("interest_expense")
 
@@ -124,7 +136,7 @@ def doh(i): return div(i.days(), inventory_turnover(i))
 def days_payables(i): return div(i.days(), payables_turnover(i))
 def roe(i): return div(i.v("net_income"), i.avg(equity)) * 100
 def payout(i): return div(i.v("dividends_paid"), income_to_common(i)) * 100
-def ebitda(i): return i.v("operating_income") + i.v("depreciation_amortization")
+def ebitda(i): return i.v("operating_income") + depreciation_amortization(i)
 def free_cash_flow(i): return i.v("operating_cash_flow") - i.v("capex")
 def net_debt(i): return total_debt(i, i.year) - liquid(i, i.year)
 
@@ -132,7 +144,7 @@ def net_debt(i): return total_debt(i, i.year) - liquid(i, i.year)
 def defensive_interval(i: Inputs) -> float:
     i.assumptions.append("daily cash expenditures = (revenue - operating income - depreciation "
                          "and amortization) / days in period; the ratio list does not define it")
-    daily = div(i.v("revenue") - i.v("operating_income") - i.v("depreciation_amortization"), i.days())
+    daily = div(i.v("revenue") - i.v("operating_income") - depreciation_amortization(i), i.days())
     return div(liquid(i, i.year) + i.v("receivables"), daily)
 
 

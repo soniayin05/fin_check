@@ -15,7 +15,7 @@ import urllib.request
 
 from .facts import coverage_table, merge, normalize
 from .filings import filing_rows, pick_exhibit, select_annual_reports, select_earnings_release
-from .retrieval import parse_filing
+from .retrieval import chunk_passages, parse_filing
 from .sec import COMPANIES, TICKERS_URL, SecClient, SecError, archive_url, facts_url, submissions_url
 
 REPORT_URL = "https://www.microsoft.com/investor/reports/ar24/index.html"
@@ -138,8 +138,8 @@ def prepare_sec(root: Path, archive: Archive, client=None) -> tuple[list[dict], 
     for path, url, ticker, year, prefix, source_type, meta in documents:
         found = parse_filing(path.read_text(errors="replace"), url, ticker, year, prefix, source_type, meta)
         if len(found) < 20:
-            problems.append(f"{path.name}: only {len(found)} passages parsed; inspect the file")
-        passages += found
+            problems.append(f"{path.name}: only {len(found)} text blocks parsed; inspect the file")
+        passages += chunk_passages(found)
     facts_dir = root / "data/facts"
     facts_dir.mkdir(parents=True, exist_ok=True)
     (facts_dir / "observations.json").write_text(json.dumps(merge(results), indent=1) + "\n")
@@ -163,9 +163,10 @@ def prepare(root: Path, include_sec: bool = False, client=None, report_getter=_p
     archive = Archive(raw)
     report = archive.fetch("msft-2024.html", REPORT_URL, report_getter, _check_report,
                            kind="annual_report_web", company="MSFT", fiscal_year=2024)
-    passages = parse_filing(report.read_text(), REPORT_URL)
-    if len(passages) < 20:
+    blocks = parse_filing(report.read_text(), REPORT_URL)
+    if len(blocks) < 20:
         raise ValueError("Too few filing passages; inspect downloaded HTML")
+    passages = chunk_passages(blocks)
     result = {"sec_downloaded": False,
               "note": "Numeric tool uses the reviewed sample extract. Run with --include-sec for SEC data."}
     if include_sec:
