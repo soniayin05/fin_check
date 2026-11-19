@@ -14,7 +14,10 @@ from .facts import METRICS, coverage_table
 from .ingest import prepare
 from .model import Gemini, ModelError, load_env
 from .ratios import RATIOS, UnknownRatio, compute_ratio, growth
-from .retrieval import PassageStore
+from .embeddings import gemini_embedder
+from .retrieval import METHODS, PassageStore, RetrievalError
+from .retrieval_eval import (answer_sheet, available_methods, evaluate, format_table, index_sha256, label,
+                             load_questions, score_sheet)
 from .sec import SecError
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -23,14 +26,21 @@ ROOT = Path(__file__).resolve().parent.parent
 def main() -> int:
     parser = argparse.ArgumentParser(description="FinCheck: audit a financial claim against filing evidence")
     parser.add_argument("command", choices=["demo", "eval-dev", "prepare-data", "search", "check", "eval-agent-dev",
-                                            "facts-report", "ratio"])
-    parser.add_argument("text", nargs="?", help="Claim for check, or keywords for search")
+                                            "facts-report", "ratio", "build-index", "label-retrieval",
+                                            "eval-retrieval", "answer-sheet", "score-answers"])
+    parser.add_argument("text", nargs="?", help="Claim for check, keywords for search, or a sheet for score-answers")
     parser.add_argument("--include-sec", action="store_true",
                         help="Also archive SEC Company Facts, 10-K filings and earnings releases")
     parser.add_argument("--company", default="MSFT", help="Ticker or company name (search, ratio, facts-report)")
     parser.add_argument("--year", type=int, default=2024, help="Fiscal year (search, ratio, facts-report)")
     parser.add_argument("--ratio", default="all", help="Ratio name, <metric>_growth, or 'all'")
     parser.add_argument("--source-type", help="Restrict search to 10-K, earnings_release or annual_report_web")
+    parser.add_argument("--method", choices=METHODS, help="Retrieval method (default: FINCHECK_RETRIEVER or keyword)")
+    parser.add_argument("--methods", help="Comma-separated methods for eval-retrieval / label-retrieval")
+    parser.add_argument("-k", type=int, default=5, help="Passages returned or scored (search, eval-retrieval)")
+    parser.add_argument("--questions", type=Path, default=ROOT / "evals/retrieval/questions.jsonl")
+    parser.add_argument("--only", help="label-retrieval: (re)label just this question ID")
+    parser.add_argument("--labeler", default="", help="label-retrieval: your name, stored with each label")
     parser.add_argument("--facts", type=Path, default=ROOT / "data/sample/financial_facts.json")
     parser.add_argument("--cases", type=Path, default=ROOT / "evals/dev/claims.jsonl")
     args = parser.parse_args()
@@ -65,14 +75,26 @@ def main() -> int:
                 else:
                     print(f"  {row['metric']:<28}{row['status'].upper():>20} {row.get('detail', '')}")
         return 0
-    passages = PassageStore(ROOT / "data/indexes/passages.json")
-    if args.command == "search":
-        if not args.text:
-            parser.error("search requires quoted keywords")
-        if not passages.passages:
-            parser.error("Run prepare-data before searching")
-        print(json.dumps(passages.search(args.text, args.company, args.year, args.source_type), indent=2))
-        return 0
+    index_path = ROOT / "data/indexes/passages.json"
+    embedder = None
+    if args.command in {"search", "build-index", "label-retrieval", "eval-retrieval", "answer-sheet",
+                        "check", "eval-agent-dev"}:  # offline commands never depend on embedding settings
+        try:
+            embedder = gemini_embedder(ROOT)
+        except ModelError as error:
+            print(str(error))
+            return 1
+    passages = PassageStore(index_path, embedder=embedder)
+    if args.command in {"search", "build-index", "label-retrieval", "eval-retrieval", "answer-sheet"} \
+            and not passages.passages:
+        parser.error("Run prepare-data before using the passage index")
+    try:
+        retrieval_exit = retrieval_command(args, parser, passages, index_path)
+    except (RetrievalError, ModelError, ValueError) as error:
+        print(f"{args.command} failed: {error}")
+        return 1
+    if retrieval_exit is not None:
+        return retrieval_exit
     store = FactStore(args.facts)
     if args.command == "ratio":
         try:
@@ -178,6 +200,66 @@ def main() -> int:
     print(f"Development tool checks: {passed}/{len(cases)}. Results: {output_dir}")
     print("These are development checks, not held-out results or agent feature credit.")
     return 0 if passed == len(cases) else 1
+
+
+def retrieval_command(args, parser, passages: PassageStore, index_path: Path) -> int | None:
+    """Phase 2 commands. Returns None when the command is not a retrieval command."""
+    if args.command == "search":
+        if not args.text:
+            parser.error("search requires quoted keywords")
+        print(json.dumps(passages.search(args.text, args.company, args.year, args.source_type,
+                                         k=args.k, method=args.method), indent=2))
+        return 0
+    if args.command == "build-index":
+        if passages.embedder is None:
+            parser.error("build-index embeds every passage and needs GEMINI_API_KEY")
+        start = perf_counter()
+        passages.embedder.embed_documents(passages.passages)
+        summary = dict(passages.embedder.usage(), passages=len(passages.passages),
+                       seconds=round(perf_counter() - start, 2), index_sha256=index_sha256(index_path))
+        print(json.dumps(summary, indent=2))
+        return 0
+    methods = available_methods(passages, args.methods.split(",") if args.methods else None)
+    if args.command == "label-retrieval":
+        questions = load_questions(args.questions)
+        count = label(passages, questions, args.questions, index_path, methods, only=args.only,
+                      labeler=args.labeler)
+        remaining = sum(1 for q in questions if not q["relevant_ids"] and q.get("status") != "no_relevant_passage")
+        print(f"Labeled {count} question(s); {remaining} still unlabeled. Saved to {args.questions}")
+        return 0
+    if args.command == "eval-retrieval":
+        questions = load_questions(args.questions)
+        result = evaluate(passages, questions, methods, args.k)
+        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        target = ROOT / "artifacts/local" / run_id
+        target.mkdir(parents=True)
+        commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True)
+        result.update(run_id=run_id, split="retrieval-dev", git_commit=commit.stdout.strip() or None,
+                      index_sha256=index_sha256(index_path),
+                      questions_sha256=hashlib.sha256(args.questions.read_bytes()).hexdigest(),
+                      embedding_usage=passages.embedder.usage() if passages.embedder else None,
+                      latency_note="Per-query wall time inside search(). For embedding and hybrid it includes "
+                                   "the Gemini query-embedding call unless the query vector was cached; see "
+                                   "embedding_usage.cache_hits.")
+        (target / "retrieval.json").write_text(json.dumps(result, indent=2) + "\n")
+        print(format_table(result))
+        print(f"Saved: {target / 'retrieval.json'}")
+        return 0
+    if args.command == "answer-sheet":
+        method = args.method or passages.default_method
+        target = ROOT / "artifacts/local" / f"answers-{method}-{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}.csv"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        print(json.dumps(answer_sheet(passages, load_questions(args.questions), Gemini(), method, target, args.k),
+                         indent=2))
+        print("Grade each row by hand: 1 = matches expected_answer, 0 = wrong, missing or unsupported. "
+              "Then run: python -m fincheck score-answers <sheet>")
+        return 0
+    if args.command == "score-answers":
+        if not args.text:
+            parser.error("score-answers requires the path of a graded sheet")
+        print(json.dumps(score_sheet(Path(args.text)), indent=2))
+        return 0
+    return None
 
 
 if __name__ == "__main__":

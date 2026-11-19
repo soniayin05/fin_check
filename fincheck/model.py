@@ -19,7 +19,8 @@ def load_env(root: Path) -> None:
         return
     for line in path.read_text().splitlines():
         key, sep, value = line.partition("=")
-        if sep and key.strip() in {"GEMINI_API_KEY", "GEMINI_MODEL", "SEC_USER_AGENT"}:
+        if sep and key.strip() in {"GEMINI_API_KEY", "GEMINI_MODEL", "SEC_USER_AGENT", "GEMINI_EMBED_MODEL",
+                                   "GEMINI_EMBED_DIM", "FINCHECK_RETRIEVER"}:
             os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
 
 
@@ -37,6 +38,17 @@ class Gemini:
                 "tools": [{"functionDeclarations": declarations}],
                 "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
                 "generationConfig": {"temperature": 0, "maxOutputTokens": 4096}}
+        return self._post(body)
+
+    def answer(self, prompt: str, instruction: str) -> dict:
+        """Plain text generation without tools (used by the retrieval answer experiment)."""
+        reply = self._post({"contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                            "systemInstruction": {"parts": [{"text": instruction}]},
+                            "generationConfig": {"temperature": 0, "maxOutputTokens": 1024}})
+        text = "".join(part.get("text", "") for part in reply["content"].get("parts", []))
+        return dict(reply, text=text.strip())
+
+    def _post(self, body: dict) -> dict:
         request = urllib.request.Request(
             f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent",
             data=json.dumps(body).encode(),

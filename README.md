@@ -51,7 +51,10 @@ Without an API key, run `python -m fincheck demo` for the deterministic calculat
 | `fincheck/ratios.py` | 41 CFA-list ratios plus EBITDA, free cash flow and net debt, with formula, inputs and assumptions |
 | `fincheck/filings.py` | Select 10-K filings and earnings releases to archive |
 | `fincheck/ingest.py` | Download/cache sources, record hashes, build facts and the passage index |
-| `fincheck/retrieval.py` | Parse passages, preserve tables, filter and rank keyword matches |
+| `fincheck/retrieval.py` | Parse filings, chunk passages, five retrieval methods (keyword, TF-IDF, BM25, embedding, hybrid) |
+| `fincheck/embeddings.py` | Gemini embeddings with an on-disk vector cache and token/cost accounting |
+| `fincheck/retrieval_eval.py` | Retrieval labeling tool, top-5 hit-rate evaluation, answer experiment |
+| `fincheck/stats.py` | Wilson intervals, paired bootstrap, p95 |
 | `fincheck/model.py` | Gemini REST requests, local configuration, bounded retries |
 | `fincheck/agent.py` | Plan/tool loop, argument checks, evidence IDs, budgets, trace saving |
 | `fincheck/__main__.py` | CLI and separate tool/agent development evaluations |
@@ -60,11 +63,13 @@ Without an API key, run `python -m fincheck demo` for the deterministic calculat
 | `docs/START_HERE.md` | What to understand and implement next |
 | `docs/EVALUATION.md` | Final evaluation design |
 | `docs/DATA.md` | SEC data pipeline, ratio rules, and what to verify by hand |
+| `docs/RETRIEVAL.md` | Chunking, retrieval methods, labeling rules and evaluation |
+| `evals/retrieval/questions.jsonl` | 25 draft retrieval questions (labels pending) |
 
 ## Current boundaries
 
 - Numeric support is MSFT revenue and operating cash flow for FY2023/2024 only. Figures are a manually reviewed extract from the [2024 annual report](https://www.microsoft.com/investor/reports/ar24/index.html), not automatically extracted XBRL.
-- Retrieval uses the full annual report and simple keyword ranking. It is not the final embedding/hybrid retrieval feature.
+- Retrieval offers keyword, TF-IDF, BM25, embedding and hybrid ranking over chunked filings (`docs/RETRIEVAL.md`). The agent still uses `keyword` by default; the method comparison waits for labeled questions.
 - A citation must have been retrieved, and returned growth rates must match the calculation tool. These checks do not prove that the model interpreted every qualifier correctly. Disclosure judgments still need labeled evaluation.
 - `prepare-data --include-sec` archives SEC Company Facts, 10-K filings and earnings releases for Microsoft, Alphabet and Apple and normalizes the numbers (see `docs/DATA.md`). This path is covered by tests against synthetic payloads only. Its output must be reviewed against the filings before it is used as evidence, and the agent's tools do not use it yet.
 - No reviewer agent, memo segmentation, GUI, baseline comparison, statistical evaluation, or completed feature credit yet.

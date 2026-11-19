@@ -66,6 +66,17 @@ Before relying on it:
 After review, commit `data/facts/observations.json` and `coverage.json` so
 evaluations run against a fixed snapshot.
 
+## Known gaps in the SEC data (checked 2026-11-18)
+
+| Gap | Effect | Handling |
+| --- | --- | --- |
+| Microsoft tags its "Depreciation, amortization, and other" line with a custom tag | No direct D&A value | D&A = depreciation + intangible amortization + finance lease amortization (FY2024: 21.8 vs 22.3 billion reported); stated as an assumption |
+| Alphabet tags only depreciation | No combined D&A value | Same fallback; Alphabet's depreciation equals its cash-flow line |
+| Apple has not tagged interest expense since FY2024 | EBIT-based ratios (ROIC, interest coverage, EBIT margin, interest burden, FCFF) are insufficient evidence for Apple FY2024 onward | Not approximated |
+| Alphabet stopped reporting inventory after FY2022 | Inventory turnover, DOH, payables turnover and cash conversion cycle are insufficient evidence for Alphabet FY2023 onward | Not approximated |
+| Alphabet long-term debt (non-current) is untagged before FY2023 | Debt-based averages for Alphabet FY2023 lack the prior year | The older tag includes finance leases, so it is not mixed in |
+| No company has preferred stock or "short-term borrowings" | None | Treated as zero and stated as an assumption |
+
 ## Not covered
 
 - Segment figures (Azure, iPhone, Google Cloud). Company Facts has only
