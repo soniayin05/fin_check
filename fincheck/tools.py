@@ -9,10 +9,32 @@ from datetime import date
 from math import isfinite
 import json
 from pathlib import Path
+import re
+
+from .facts import METRICS
 
 
 class EvidenceError(ValueError):
     """Evidence is missing, ambiguous, or unsuitable for this calculation."""
+
+
+class MissingEvidence(EvidenceError):
+    """No observation was loaded for the requested company, metric and year."""
+
+
+class UnknownMetric(ValueError):
+    """The requested metric is not part of the supported financial vocabulary."""
+
+
+def normalize_metric(metric: str) -> str:
+    key = re.sub(r"[^a-z0-9]+", "_", metric.strip().lower()).strip("_")
+    aliases = {"total_revenue": "revenue", "revenues": "revenue", "net_sales": "revenue",
+               "cash_flow_from_operations": "operating_cash_flow", "cfo": "operating_cash_flow",
+               "diluted_eps": "eps_diluted", "basic_eps": "eps_basic"}
+    key = aliases.get(key, key)
+    if key not in METRICS:
+        raise UnknownMetric(f"Unknown metric '{metric}'. Supported: {', '.join(METRICS)}")
+    return key
 
 
 COMPANY_ALIASES = {
@@ -51,7 +73,7 @@ class Observation:
     restated: bool = False          # an earlier filing reported a different value
 
     def validate_annual(self) -> None:
-        if not isfinite(self.value):
+        if type(self.value) not in (int, float) or not isfinite(self.value):
             raise EvidenceError(f"{self.id}: value must be finite")
         if self.period_type == "instant":
             if self.period_start != self.period_end:
@@ -69,6 +91,11 @@ class FactStore:
     def __init__(self, path: Path):
         payload = json.loads(path.read_text())
         self.sources = payload["sources"]
+        coverage = payload.get("coverage", [])
+        coverage_path = path.with_name("coverage.json")
+        if path.name == "observations.json" and coverage_path.exists():
+            coverage = json.loads(coverage_path.read_text()).get("coverage", coverage)
+        self.coverage = {(r["company"], r["metric"], r["fiscal_year"]): r for r in coverage}
         self.observations = [Observation(**row) for row in payload["observations"]]
         ids = [row.id for row in self.observations]
         if len(ids) != len(set(ids)):
@@ -79,8 +106,14 @@ class FactStore:
 
     def get_financial_fact(self, company: str, metric: str, year: int) -> Observation:
         company = normalize_company(company)
+        metric = normalize_metric(metric)
+        coverage = self.coverage.get((company, metric, year), {})
+        if coverage.get("status") == "conflict":
+            raise EvidenceError(f"Conflicting {company}/{metric}/{year} evidence: {coverage.get('detail', '')}")
         rows = [row for row in self.observations
                 if (row.company, row.metric, row.fiscal_year) == (company, metric, year)]
+        if not rows:
+            raise MissingEvidence(f"Expected one {company}/{metric}/{year} observation; found 0")
         if len(rows) != 1:
             raise EvidenceError(
                 f"Expected one {company}/{metric}/{year} observation; found {len(rows)}")
@@ -131,6 +164,8 @@ def compare_growth(store: FactStore, company: str, year: int,
     This is a tool demonstration, not an LLM or natural-language parser.
     Missing evidence means missing from THIS loaded sample, not all public filings.
     """
+    company = normalize_company(company)
+    left_metric, right_metric = normalize_metric(left_metric), normalize_metric(right_metric)
     try:
         left = [store.get_financial_fact(company, left_metric, y) for y in (year - 1, year)]
         right = [store.get_financial_fact(company, right_metric, y) for y in (year - 1, year)]
@@ -141,6 +176,7 @@ def compare_growth(store: FactStore, company: str, year: int,
         rhs = calculate_growth(*right)
         source_ids = sorted({row.source_id for row in left + right})
         return {
+            "company": company, "fiscal_year": year,
             "verdict": "supported" if lhs > rhs else "contradicted",
             "left_metric": left_metric, "left_growth_pct": lhs,
             "right_metric": right_metric, "right_growth_pct": rhs,
