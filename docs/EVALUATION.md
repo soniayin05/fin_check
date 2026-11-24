@@ -1,10 +1,20 @@
-# Evaluation plan (not completed results)
+# Evaluation plan and implemented runner
 
 ## Current status
 
 `python -m fincheck eval-dev` runs three deterministic financial-tool checks against a small real-data sample. It does not call a model or perform memo extraction. Passing these checks does not establish agent performance or feature credit.
 
-The starter uses only one Microsoft report. Two source IDs point to two tables in that report; do not count them as two real sources. Add independently sourced runtime data, such as SEC Company Facts plus investor-relations documents.
+The original sample uses one Microsoft report; two tables are not two independent
+sources. The current snapshot includes SEC Company Facts and three-company filing
+archives. Source independence still requires review; an earnings release and
+10-K authored by the same company are not independent corroboration merely
+because their document types differ.
+
+`compare-systems` implements a fixed baseline and common scorer, records all
+attempts, and reports primary paired outcomes separately from repeats. See
+`docs/BASELINE.md` for commands and data requirements. Twelve draft development
+claims have been added separately from the original sample cases. Full frozen
+and held-out evaluations remain pending.
 
 ## Development vs held-out cases
 
@@ -21,7 +31,7 @@ Compare a justified fixed retrieval-and-answer baseline with the final agent on 
 
 Save case IDs, inputs, outputs, scores, evidence, model/version or alias and date, settings, retries, data versions, token counts, timings, and cost. Report primary pass counts and 95% Wilson intervals. Report both-pass, agent-only-pass, baseline-only-pass, both-fail counts. Use at least 1,000 paired bootstrap resamples for the pass-rate difference; an interval containing zero is inconclusive.
 
-Report mean and sample p95 latency, repeated-run variability, measurement boundaries (setup, caching, retries, rate-limit waits), actual spending, and estimated per-task list-price cost with provider/date. No paid model calls occur in the current starter; its local timing is not agent latency.
+Report mean and sample p95 latency, repeated-run variability, measurement boundaries (setup, caching, retries, rate-limit waits), actual spending, and estimated per-task list-price cost with provider/date. Live comparison commands call the configured model. Offline tool timings are not agent latency, and actual billing remains unavailable in the adapter.
 
 Discuss observed failures in categories, up to ten representative examples. Supplement a low failure count with boundary/fault tests. Do not add an LLM judge casually: the handout requires outside-human validation and bias tests even without claiming F9.
 

@@ -20,6 +20,7 @@ from .retrieval import METHODS, PassageStore, RetrievalError
 from .retrieval_eval import (answer_sheet, available_methods, evaluate, format_table, index_sha256, label,
                              load_questions, score_sheet)
 from .sec import SecError
+from .evaluation import comparison_command
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -28,7 +29,7 @@ def facts_path(root: Path, command: str, explicit: Path | None) -> Path:
     if explicit is not None:
         return explicit
     sec = root / "data/facts/observations.json"
-    if command in {"check", "ratio", "verify-number"} and sec.exists():
+    if command in {"check", "ratio", "verify-number", "compare-systems"} and sec.exists():
         return sec
     return root / "data/sample/financial_facts.json"
 
@@ -37,7 +38,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="FinCheck: audit a financial claim against filing evidence")
     parser.add_argument("command", choices=["demo", "eval-dev", "prepare-data", "search", "check", "eval-agent-dev",
                                             "facts-report", "ratio", "build-index", "label-retrieval",
-                                            "eval-retrieval", "answer-sheet", "score-answers", "verify-number"])
+                                            "eval-retrieval", "answer-sheet", "score-answers", "verify-number", "compare-systems"])
     parser.add_argument("text", nargs="?", help="Claim for check, keywords for search, or a sheet for score-answers")
     parser.add_argument("--include-sec", action="store_true",
                         help="Also archive SEC Company Facts, 10-K filings and earnings releases")
@@ -56,8 +57,18 @@ def main() -> int:
     parser.add_argument("--measure", help="Metric or ratio name for verify-number")
     parser.add_argument("--value", help="Numeric literal as written in the claim, preserving decimal places")
     parser.add_argument("--unit", choices=list(UNITS), help="Unit of the claimed value for verify-number")
-    parser.add_argument("--cases", type=Path, default=ROOT / "evals/dev/claims.jsonl")
+    parser.add_argument("--cases", type=Path, help="Claim cases; compare-systems defaults to claims_stage4.jsonl")
+    parser.add_argument("--dry-run", action="store_true", help="compare-systems: validate inputs without API calls")
+    parser.add_argument("--max-calls", type=int, default=12)
+    parser.add_argument("--max-turns", type=int, default=10)
+    parser.add_argument("--repeats", type=int, default=1, help="Total runs for preselected --repeat-ids (1-10)")
+    parser.add_argument("--repeat-ids", help="Comma-separated IDs preselected for additional runs")
+    parser.add_argument("--input-price-per-million", type=float)
+    parser.add_argument("--output-price-per-million", type=float)
+    parser.add_argument("--pricing-date", help="Date of user-supplied model list prices")
     args = parser.parse_args()
+    if args.cases is None:
+        args.cases = ROOT / ('evals/dev/claims_stage4.jsonl' if args.command == 'compare-systems' else 'evals/dev/claims.jsonl')
     args.facts = facts_path(ROOT, args.command, args.facts)
     load_env(ROOT)
     if args.command == "prepare-data":
@@ -93,13 +104,15 @@ def main() -> int:
     index_path = ROOT / "data/indexes/passages.json"
     embedder = None
     if args.command in {"search", "build-index", "label-retrieval", "eval-retrieval", "answer-sheet",
-                        "check", "eval-agent-dev"}:  # offline commands never depend on embedding settings
+                        "check", "eval-agent-dev", "compare-systems"}:  # offline commands never depend on embedding settings
         try:
-            embedder = gemini_embedder(ROOT)
+            embedder = gemini_embedder(ROOT) if not args.dry_run else None
         except ModelError as error:
             print(str(error))
             return 1
     passages = PassageStore(index_path, embedder=embedder)
+    if args.command == 'compare-systems' and args.method:
+        passages.default_method = args.method
     if args.command in {"search", "build-index", "label-retrieval", "eval-retrieval", "answer-sheet"} \
             and not passages.passages:
         parser.error("Run prepare-data before using the passage index")
@@ -114,6 +127,8 @@ def main() -> int:
         store = FactStore(args.facts)
     except (OSError, ValueError, KeyError, TypeError) as error:
         parser.error(f"Cannot load facts from {args.facts}: {error}")
+    if args.command == 'compare-systems':
+        return comparison_command(args, parser, ROOT, store, passages)
     if args.command == "verify-number":
         if args.measure is None or args.value is None or args.unit is None:
             parser.error("verify-number requires --measure, --value and --unit")

@@ -152,6 +152,8 @@ class Agent:
             {company: sorted(years) for company, years in sorted(scope.items())})
         self.instruction += "\nSupported metrics: " + ", ".join(METRICS)
         self.instruction += "\nSupported ratios: " + ", ".join(RATIOS)
+        self.instruction = self.instruction.replace('at most 12 tool calls and 10 model turns',
+                                                    f'at most {max_calls} tool calls and {max_turns} model turns')
 
     def run(self, claim: str) -> dict:
         if not claim.strip() or len(claim) > 6000:

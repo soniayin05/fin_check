@@ -1,15 +1,15 @@
 # Implementation stages
 
-Status as of November 21, 2026. The active GitHub checkout on Sonia's Mac is
+Status as of November 24, 2026. The active GitHub checkout on Sonia's Mac is
 `/Users/soniayin/Desktop/CIS 1990 Final Project/fin_check`. The containing folder
 has an older checkout with separate Git state and configuration.
 
 | Stage | Status | Remaining acceptance work |
 | --- | --- | --- |
-| SEC data | Pipeline merged; local observations contain 546 rows across MSFT, GOOGL and AAPL | Record reconciliation against primary filings for each company; verify annual earnings-release selection |
-| Retrieval | Chunking, keyword, TF-IDF, BM25, embedding and hybrid implementations merged | Label the 25 draft questions, compare methods, run answer experiment; the committed questions currently have no relevance labels |
-| Numeric agent tools | Implemented in `codex/stage-3-numeric-tools` | Broader claim interpretation evaluation and reviewed development cases |
-| Baseline and evaluation runner | Next implementation stage | Fixed retrieval/answer baseline, common verdict/evidence scoring, repeated runs and comparable budgets |
+| SEC data | Pipeline and 546-row snapshot merged; 15 FY2024 core observations manually reconciled | Broader reconciliation; verify annual earnings-release selection |
+| Retrieval | Five methods implemented; 23 AI-assisted labels confirmed by Sonia; preliminary keyword/TF-IDF/BM25 comparison run | Resolve rq-07/rq-21, review rq-23 wording, pool embedding/hybrid candidates and run answer experiment |
+| Numeric agent tools | Merged into main | Broader claim interpretation evaluation |
+| Baseline and evaluation runner | Implemented: fixed two-stage baseline, shared scope/evidence/numeric scoring, repetitions, traces and statistics | Review 12 new dev claim variants; run full comparison and preselected repetitions; final held-out set later |
 | Memo workflow | Pending | PDF ingestion, claim extraction with source locations and qualifier checks |
 | Reviewer workflow | Pending | Explicit tool/state permissions, shared budget, bounded repairs and worker failure handling |
 | Recovery and observability experiments | Pending | Fault cases, recovery comparison, trace search and measured optimization |
@@ -55,15 +55,15 @@ The first network attempt failed inside the sandbox. Live traces, including the
 failed/incomplete attempts, are retained under ignored `artifacts/local/`.
 These few development attempts do not establish a final accuracy rate.
 
-The newer checkout's `.env` lacks `GEMINI_API_KEY`. Live smoke calls explicitly
-loaded the existing configuration from the containing folder. To run `check`
-normally, configure the key in the active repository's `.env`. `verify-number`
-works without model access.
+The earlier numeric smoke used configuration from the containing folder. Keep
+model configuration in the active checkout's `.env` for ordinary CLI runs.
+`verify-number` and comparison dry runs work without model access.
 
 ## Next stage
 
-Implement a fixed baseline and a shared claim evaluation runner before adding
-reviewer coordination. Keep gold labels out of model/tool inputs. Preserve the
-original development cases and record source-checked numeric/disclosure cases
-separately. An exhausted execution budget produces `incomplete` with no factual
-verdict. A completed check with missing evidence can produce `insufficient_evidence`.
+Review `evals/dev/claims_stage4.jsonl` and run the shared comparison described in
+`docs/BASELINE.md`, keeping gold out of model/tool inputs. The original three
+sample development cases remain separate. Then proceed to memo ingestion and
+claim extraction, followed by the permission-separated reviewer workflow.
+Budget exhaustion yields `incomplete`; completed missing-evidence checks can
+yield `insufficient_evidence`.
