@@ -17,7 +17,8 @@ from dataclasses import asdict
 from datetime import date
 import re
 
-from .tools import EvidenceError, FactStore, calculate_growth, normalize_company
+from .facts import METRICS
+from .tools import EvidenceError, FactStore, MissingEvidence, calculate_growth, normalize_company, normalize_metric
 
 
 class Inputs:
@@ -27,20 +28,30 @@ class Inputs:
         self.store, self.company, self.year = store, normalize_company(company), year
         self.used: dict[str, dict] = {}
         self.assumptions: list[str] = []
+        self.periods: dict[int, tuple[str | None, str]] = {}
 
     def obs(self, metric: str, year: int | None = None):
         row = self.store.get_financial_fact(self.company, metric, self.year if year is None else year)
+        kind, unit, _ = METRICS[row.metric]
+        if row.period_type != kind or (row.unit != unit and not (unit == "USD" and row.unit == "USD_millions")):
+            raise EvidenceError(f"Invalid period type or unit for {row.id}")
+        start = row.period_start if kind == "duration" else None
+        old_start, old_end = self.periods.get(row.fiscal_year, (None, row.period_end))
+        if old_end != row.period_end or (old_start and start and old_start != start):
+            raise EvidenceError("Ratio inputs must cover the same fiscal period")
+        self.periods[row.fiscal_year] = (old_start or start, row.period_end)
         self.used[row.id] = asdict(row)
         return row
 
     def v(self, metric: str, year: int | None = None) -> float:
-        return self.obs(metric, year).value
+        row = self.obs(metric, year)
+        return row.value * 10**6 if row.unit == "USD_millions" else row.value
 
     def opt(self, metric: str, year: int | None = None) -> float:
         """A component that may legitimately be absent; absence is recorded, not hidden."""
         try:
             return self.v(metric, year)
-        except EvidenceError:
+        except MissingEvidence:
             when = self.year if year is None else year
             note = f"{metric} FY{when} is not in the loaded data and was treated as 0"
             if note not in self.assumptions:
@@ -69,7 +80,7 @@ def bal(metric: str):
 def gross_profit(i: Inputs) -> float:
     try:
         return i.v("gross_profit")
-    except EvidenceError:
+    except MissingEvidence:
         i.assumptions.append("gross profit is not tagged; computed as revenue minus cost of revenue")
         return i.v("revenue") - i.v("cost_of_revenue")
 
@@ -77,7 +88,7 @@ def gross_profit(i: Inputs) -> float:
 def depreciation_amortization(i: Inputs) -> float:
     try:
         return i.v("depreciation_amortization")
-    except EvidenceError:
+    except MissingEvidence:
         pass
     total = i.v("depreciation") + i.opt("amortization_intangibles") + i.opt("finance_lease_amortization")
     i.assumptions.append("D&A = depreciation + amortization of intangibles + finance lease amortization; the "
@@ -329,6 +340,7 @@ def compute_ratio(store: FactStore, company: str, year: int, name: str) -> dict:
 
 def growth(store: FactStore, company: str, year: int, metric: str) -> dict:
     """Year-over-year growth of one metric, in percent."""
+    metric = normalize_metric(metric)
     inputs = Inputs(store, company, year)
     base = {"ratio": f"{metric}_growth", "company": inputs.company, "fiscal_year": year, "unit": "%",
             "formula": f"{metric} FY{year} / {metric} FY{year - 1} - 1"}

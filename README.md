@@ -2,7 +2,7 @@
 
 CIS 1990 final project: check financial claims against filing evidence.
 
-**November 4 check-in prototype:** one Gemini agent can plan a check, call a Python growth-comparison tool, search an archived Microsoft annual report, and return a sourced verdict. It saves model/tool traces and stops after 12 tool calls or 10 model turns. This is an early single-agent implementation, not the completed multi-agent project.
+**November 21 implementation:** one Gemini agent plans a check, retrieves reported financial facts, verifies numeric values or ratios in Python, and searches archived filings. Numeric verdicts reference a calculation ID and carry the verified values and sources. Runs stop after 12 tool calls or 10 model turns. Stage status and the remaining work are in `docs/IMPLEMENTATION_STATUS.md`.
 
 ## Quick start
 
@@ -22,6 +22,29 @@ python -m fincheck check "Microsoft revenue grew faster than operating cash flow
 ```
 
 The expected numerical answer is **contradicted**: revenue grew about 15.67%, versus 35.36% for operating cash flow. Python calculates this from four reviewed annual-report observations. The model chooses tools and explains the result; it does not supply the numbers.
+
+After `prepare-data --include-sec`, `check` and `ratio` use the local SEC observations
+when present. `--facts <path>` selects a specific snapshot. The original `demo`,
+`eval-dev` and `eval-agent-dev` commands keep using the sample unless given `--facts`.
+Keep `.env` in this repository root (the folder containing this README).
+
+```bash
+python -m fincheck check "Microsoft revenue was $245.1B in FY2024."
+python -m fincheck check "Microsoft revenue was $250B in FY2024."
+python -m fincheck check "Microsoft operating profit margin was 44.6% in FY2024."
+```
+
+For a calculation without an API call:
+
+```bash
+python -m fincheck verify-number --company MSFT --year 2024 --measure revenue --value 245.1 --unit USD_billions
+python -m fincheck verify-number --company MSFT --year 2024 --operation ratio --measure operating_profit_margin --value 44.6 --unit %
+```
+
+Values are compared at the precision supplied. `245.1 USD_billions` has a rounding
+tolerance of 0.05 billion. A ratio requiring assumed zero inputs or approximate D&A
+returns insufficient evidence until those inputs are verified. Model interpretation
+of the company, measure and claim qualifiers still needs development evaluation.
 
 To search the downloaded report:
 
@@ -46,6 +69,7 @@ Without an API key, run `python -m fincheck demo` for the deterministic calculat
 | File | Responsibility |
 | --- | --- |
 | `fincheck/tools.py` | Observations, annual-period/unit checks, growth arithmetic |
+| `fincheck/calculations.py` | Fact, growth and ratio equality checks, unit conversion, rounding tolerance |
 | `fincheck/sec.py` | SEC client: declared User-Agent, throttling, retries |
 | `fincheck/facts.py` | Normalize SEC Company Facts into annual observations with tag, accession and filing date |
 | `fincheck/ratios.py` | 41 CFA-list ratios plus EBITDA, free cash flow and net debt, with formula, inputs and assumptions |
@@ -68,10 +92,10 @@ Without an API key, run `python -m fincheck demo` for the deterministic calculat
 
 ## Current boundaries
 
-- Numeric support is MSFT revenue and operating cash flow for FY2023/2024 only. Figures are a manually reviewed extract from the [2024 annual report](https://www.microsoft.com/investor/reports/ar24/index.html), not automatically extracted XBRL.
+- Numeric coverage follows the loaded snapshot. The committed sample has MSFT revenue and operating cash flow for FY2023/2024. Locally prepared SEC data includes Microsoft, Alphabet and Apple. The agent can check reported values, growth comparisons and numeric ratio claims.
 - Retrieval offers keyword, TF-IDF, BM25, embedding and hybrid ranking over chunked filings (`docs/RETRIEVAL.md`). The agent still uses `keyword` by default; the method comparison waits for labeled questions.
 - A citation must have been retrieved, and returned growth rates must match the calculation tool. These checks do not prove that the model interpreted every qualifier correctly. Disclosure judgments still need labeled evaluation.
-- `prepare-data --include-sec` archives SEC Company Facts, 10-K filings and earnings releases for Microsoft, Alphabet and Apple and normalizes the numbers (see `docs/DATA.md`). This path is covered by tests against synthetic payloads only. Its output must be reviewed against the filings before it is used as evidence, and the agent's tools do not use it yet.
+- `prepare-data --include-sec` archives SEC Company Facts, 10-K filings and earnings releases for Microsoft, Alphabet and Apple and normalizes the numbers (see `docs/DATA.md`). Local SEC observations have been exercised through the numeric tools and a small live smoke check. Broader source reconciliation and earnings-release validation remain pending.
 - No reviewer agent, memo segmentation, GUI, baseline comparison, statistical evaluation, or completed feature credit yet.
 - Traces record model usage when supplied and leave dollar cost unavailable until pricing is configured. Raw traces include user claims and filing text; review them before sharing.
 

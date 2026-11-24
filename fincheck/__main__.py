@@ -10,6 +10,7 @@ from time import perf_counter
 
 from .tools import FactStore, compare_growth, normalize_company
 from .agent import Agent, save_run
+from .calculations import UNITS, calculate
 from .facts import METRICS, coverage_table
 from .ingest import prepare
 from .model import Gemini, ModelError, load_env
@@ -23,11 +24,20 @@ from .sec import SecError
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def facts_path(root: Path, command: str, explicit: Path | None) -> Path:
+    if explicit is not None:
+        return explicit
+    sec = root / "data/facts/observations.json"
+    if command in {"check", "ratio", "verify-number"} and sec.exists():
+        return sec
+    return root / "data/sample/financial_facts.json"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="FinCheck: audit a financial claim against filing evidence")
     parser.add_argument("command", choices=["demo", "eval-dev", "prepare-data", "search", "check", "eval-agent-dev",
                                             "facts-report", "ratio", "build-index", "label-retrieval",
-                                            "eval-retrieval", "answer-sheet", "score-answers"])
+                                            "eval-retrieval", "answer-sheet", "score-answers", "verify-number"])
     parser.add_argument("text", nargs="?", help="Claim for check, keywords for search, or a sheet for score-answers")
     parser.add_argument("--include-sec", action="store_true",
                         help="Also archive SEC Company Facts, 10-K filings and earnings releases")
@@ -41,9 +51,14 @@ def main() -> int:
     parser.add_argument("--questions", type=Path, default=ROOT / "evals/retrieval/questions.jsonl")
     parser.add_argument("--only", help="label-retrieval: (re)label just this question ID")
     parser.add_argument("--labeler", default="", help="label-retrieval: your name, stored with each label")
-    parser.add_argument("--facts", type=Path, default=ROOT / "data/sample/financial_facts.json")
+    parser.add_argument("--facts", type=Path, help="Facts JSON. check/ratio/verify-number use SEC data when present")
+    parser.add_argument("--operation", choices=["fact", "growth", "ratio"], default="fact")
+    parser.add_argument("--measure", help="Metric or ratio name for verify-number")
+    parser.add_argument("--value", help="Numeric literal as written in the claim, preserving decimal places")
+    parser.add_argument("--unit", choices=list(UNITS), help="Unit of the claimed value for verify-number")
     parser.add_argument("--cases", type=Path, default=ROOT / "evals/dev/claims.jsonl")
     args = parser.parse_args()
+    args.facts = facts_path(ROOT, args.command, args.facts)
     load_env(ROOT)
     if args.command == "prepare-data":
         try:
@@ -95,7 +110,19 @@ def main() -> int:
         return 1
     if retrieval_exit is not None:
         return retrieval_exit
-    store = FactStore(args.facts)
+    try:
+        store = FactStore(args.facts)
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        parser.error(f"Cannot load facts from {args.facts}: {error}")
+    if args.command == "verify-number":
+        if args.measure is None or args.value is None or args.unit is None:
+            parser.error("verify-number requires --measure, --value and --unit")
+        try:
+            result = calculate(store, args.company, args.year, args.operation, args.measure, args.value, args.unit)
+        except ValueError as error:
+            parser.error(str(error))
+        print(json.dumps(dict(result, facts_path=str(args.facts)), indent=2, allow_nan=False))
+        return 0 if result["status"] == "ok" else 1
     if args.command == "ratio":
         try:
             if args.ratio != "all":
@@ -124,6 +151,7 @@ def main() -> int:
                 run = agent.run(args.text)
             except ValueError as error:
                 parser.error(str(error))
+            run["facts_path"] = str(args.facts)
             path = save_run(ROOT, run, args.facts)
             print(json.dumps({"status": run["status"], "result": run["result"]}, indent=2))
             print(f"Trace: {path}")
