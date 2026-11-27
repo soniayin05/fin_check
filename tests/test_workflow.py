@@ -67,6 +67,17 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('Permission denied',run['events'][1]['output']['error'])
         self.assertNotIn('verdict',run['result'])
 
+    def test_additional_numeric_citation_reaches_original_review(self):
+        facts,calc,draft,reads=protocol()
+        passages=PassageStore();passages.passages=[dict(id='filing-extra',company='MSFT',year=2024,text='Revenue was $245.122 billion.')]
+        extra=deepcopy(draft);extra['args']['evidence_ids'].append('filing-extra')
+        model=Script([PLAN,call('search_filings',query='Revenue',company='MSFT',year=2024),calc,extra,
+                      reads+[call('read_evidence',source_id='filing-extra')],APPROVE])
+        run=Workflow(facts,passages,model).run('Microsoft revenue was $245.1B in FY2024.')
+        self.assertEqual(run['status'],'complete')
+        self.assertIn('filing-extra',run['result']['sources'])
+        self.assertIn('filing-extra',run['result']['review']['original_evidence_read'])
+
     def test_cannot_approve_without_reading(self):
         _,calc,draft,reads=protocol()
         run,_=self.run_flow([PLAN,calc,draft,APPROVE,reads,APPROVE])

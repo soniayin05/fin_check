@@ -20,7 +20,7 @@ def load_env(root: Path) -> None:
     for line in path.read_text().splitlines():
         key, sep, value = line.partition("=")
         if sep and key.strip() in {"GEMINI_API_KEY", "GEMINI_MODEL", "SEC_USER_AGENT", "GEMINI_EMBED_MODEL",
-                                   "GEMINI_EMBED_DIM", "FINCHECK_RETRIEVER"}:
+                                   "GEMINI_EMBED_DIM", "FINCHECK_RETRIEVER", "GEMINI_MIN_INTERVAL_SECONDS"}:
             os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
 
 
@@ -32,6 +32,10 @@ class Gemini:
             raise ModelError("Set GEMINI_API_KEY in your local .env first.")
         if not re.fullmatch(r"[a-zA-Z0-9._-]+", self.model):
             raise ModelError("Invalid GEMINI_MODEL name.")
+        try:self.min_interval=float(os.getenv('GEMINI_MIN_INTERVAL_SECONDS','1'))
+        except ValueError:raise ModelError('GEMINI_MIN_INTERVAL_SECONDS must be between 0 and 60.') from None
+        if not 0<=self.min_interval<=60:raise ModelError('GEMINI_MIN_INTERVAL_SECONDS must be between 0 and 60.')
+        self.last_request=0.0
 
     def generate(self, messages: list, declarations: list, instruction: str) -> dict:
         body = {"contents": messages, "systemInstruction": {"parts": [{"text": instruction}]},
@@ -54,6 +58,9 @@ class Gemini:
             data=json.dumps(body).encode(),
             headers={"Content-Type": "application/json", "x-goog-api-key": self.key})
         for attempt in range(2):
+            wait=self.min_interval-(time.monotonic()-self.last_request)
+            if wait>0:time.sleep(wait)
+            self.last_request=time.monotonic()
             try:
                 with urllib.request.urlopen(request, timeout=45) as response:
                     payload = json.load(response)

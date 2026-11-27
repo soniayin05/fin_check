@@ -118,8 +118,13 @@ def numeric_verdict(args: dict, seen: dict, calculations: list[dict]) -> dict:
                 raise ValueError("Submitted growth rates must match the calculation")
         if "calc_id" not in args and any(key not in args for key in ("left_growth_pct", "right_growth_pct")):
             raise ValueError("Return both calculated growth rates or reference calc_id")
+    # Preserve additional retrieved citations so review/scoring can resolve every
+    # ID in the draft, including a filing passage cited beside numeric sources.
+    observation_ids = {o['id'] for o in selected.get('observations', [])}
+    sources = dict(selected.get('sources', {}))
+    sources.update({key: seen[key] for key in args['evidence_ids'] if key not in observation_ids})
     result = {"verdict": selected["verdict"], "calc_id": selected["calc_id"],
-              "evidence_ids": args["evidence_ids"], "sources": selected.get("sources", {}),
+              "evidence_ids": args["evidence_ids"], "sources": sources,
               "calculation": selected, "model_explanation": args["explanation"]}
     if selected["verdict"] == "insufficient_evidence":
         result["explanation"] = selected.get("reason", "The loaded dataset has insufficient evidence.")

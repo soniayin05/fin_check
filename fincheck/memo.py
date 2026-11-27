@@ -291,7 +291,11 @@ def render_report(target,memo,result,ingest_dir):
             label=escape(str(key))
             if isinstance(url,str) and url.startswith('https://'):
                 label='<a href="'+escape(url,quote=True)+'" target="_blank" rel="noopener noreferrer">'+label+'</a>'
-            evidence+='<li>'+label+'</li>'
+            details=source.get('text') or source.get('excerpt')
+            body='<p>'+escape(str(details))+'</p>' if details else '<pre>'+escape(json.dumps(source,indent=2))+'</pre>'
+            evidence+='<li>'+label+'<details><summary>Read evidence</summary>'+body+'</details></li>'
+        if output.get('observations'):
+            evidence+='<li><details><summary>Original numeric observations</summary><pre>'+escape(json.dumps(output['observations'],indent=2))+'</pre></details></li>'
         if any(s.get('source_type')=='user_supplied' for s in output.get('sources',{}).values()):
             evidence+='<li>Includes user-supplied evidence; authenticity is not independently validated.</li>'
         sections.append('<article><h2>'+escape(str(item.get('claim_id','invalid claim')))+' — page '+escape(str(page_number))+
@@ -302,7 +306,7 @@ def render_report(target,memo,result,ingest_dir):
     download='<p><a href="annotated-memo.pdf">Download annotated PDF</a></p>' if (target/'annotated-memo.pdf').exists() else ''
     html='''<!doctype html><html lang="en"><meta charset="utf-8"><title>FinCheck memo review</title>
 <style>body{font:16px system-ui;max-width:960px;margin:40px auto;padding:0 24px;color:#182537}
-article{border:1px solid #cbd5e1;padding:20px;margin:20px 0;break-inside:avoid}
+article{border:1px solid #cbd5e1;padding:20px;margin:20px 0;break-inside:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere}details{margin:10px 0}
 blockquote{white-space:pre-wrap;margin:12px 0;padding:12px;background:#f1f5f9}h2{font-size:18px}</style>
 <h1>FinCheck memo review</h1><p>Overall status: '''+escape(result['status'])+'</p><p>'+escape(memo['source_name'])+'</p>'+download+''.join(sections)+'''<p>Text extraction can miss chart, table or scanned content. Review page images and the JSON report's warnings.</p></html>'''
     (target/'report.html').write_text(html)

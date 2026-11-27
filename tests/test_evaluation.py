@@ -81,6 +81,29 @@ class BaselineTests(unittest.TestCase):
 
 
 class ScoringTests(unittest.TestCase):
+    def test_quota_stops_batch_and_interrupt_saves_partial_summary(self):
+        class Stub:
+            model=ScriptedModel([])
+            def __init__(self,interrupt=False):self.interrupt=interrupt
+            def run(self,claim):
+                if self.interrupt:raise KeyboardInterrupt
+                return dict(claim=claim,status='error',result={'error':'Gemini HTTP 429. Check quota.'},
+                            events=[],tool_calls=0,latency_seconds=.1,model=self.model.model)
+        cases=[dict(id=str(n),claim='claim '+str(n),expected={'verdict':'insufficient_evidence'}) for n in range(4)]
+        with TemporaryDirectory() as d:
+            root=Path(d);path=root/'cases.jsonl';path.write_text('\n'.join(json.dumps(c) for c in cases))
+            with patch('builtins.print'):
+                target,result=run_comparison(root,cases,{'baseline':Stub(),'agent':Stub()},FACTS,path,{})
+            self.assertEqual(result['run_status'],'quota_stopped')
+            self.assertEqual(result['completed_runs'],3)
+            self.assertEqual(result['scheduled_runs'],8)
+            self.assertEqual(json.loads((target/'summary.json').read_text()),json.loads(json.dumps(result)))
+            with patch('builtins.print'):
+                target,result=run_comparison(root,cases,{'baseline':Stub(True),'agent':Stub()},FACTS,path,{})
+            self.assertEqual(result['run_status'],'interrupted')
+            self.assertEqual(result['completed_runs'],0)
+            self.assertTrue((target/'summary.json').exists())
+
     def test_wrong_unit_entity_period_number_and_source_fail(self):
         gold=dict(verdict='supported',company='MSFT',fiscal_year=2024,verified_value=245.122,
                   verified_unit='USD_billions',required_source_ids=['s'])

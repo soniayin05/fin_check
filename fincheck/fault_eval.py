@@ -35,7 +35,8 @@ def fault_command(args,parser,root,facts,passages):
                  for name,planned in [('planned_recovery',True),('no_explicit_plan',False)]}
         target,summary=run_comparison(root,cases,systems,args.facts,args.cases,
             dict(model=model.model,max_calls=args.max_calls,max_turns=args.max_turns,
-                 experiment='planning_plus_recovery_vs_disabled',retriever=passages.default_method))
+                 experiment='planning_plus_recovery_vs_disabled',retriever=passages.default_method,
+                 request_interval_seconds=model.min_interval))
         print(summary);print(f'Fault results: {target}')
-        return 0
+        return 0 if summary['run_status']=='complete' else 2
     except (ValueError,KeyError,OSError,ModelError) as error:parser.error(str(error))

@@ -207,6 +207,13 @@ def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats
                 budget_note='Same configured ceilings; baseline has a fixed two-model/two-tool pipeline. Agent may spend more within the ceilings.')
     (target/'metadata.json').write_text(redact(json.dumps(meta, indent=2))+'\n')
     rows=[]
+    scheduled=len(systems)*(len(cases)+(repeats-1)*len(repeat_ids))
+    consecutive_quota_failures=0
+    def checkpoint(status,**extra):
+        summary=summarize(rows)
+        summary.update(run_status=status,scheduled_runs=scheduled,completed_runs=len(rows),**extra)
+        (target/'summary.json').write_text(redact(json.dumps(summary,indent=2,allow_nan=False))+'\n')
+        return summary
     for repeat in range(repeats):
         for i, case in enumerate(cases):
             if repeat and case['id'] not in repeat_ids:
@@ -218,6 +225,8 @@ def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats
                 tick=perf_counter()
                 try:
                     run=systems[name].run(case['claim'])  # never pass input hints or expected labels
+                except KeyboardInterrupt:
+                    return target,checkpoint('interrupted',interrupted_run=dict(case_id=case['id'],system=name,repeat=repeat))
                 except Exception as error:
                     run=dict(claim=case['claim'],status='error',result={'error':type(error).__name__},
                              events=[],tool_calls=0,latency_seconds=perf_counter()-tick,
@@ -235,9 +244,14 @@ def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats
                 with (target/'results.jsonl').open('a') as file:
                     file.write(redact(json.dumps(row,allow_nan=False))+'\n')
                 print(f"{name} {case['id']} repeat={repeat}: {run['status']} {'PASS' if row['score']['passed'] else 'FAIL'}",flush=True)
-    summary=summarize(rows)
-    (target/'summary.json').write_text(redact(json.dumps(summary,indent=2,allow_nan=False))+'\n')
-    return target, summary
+                errors=[str((run.get('result') or {}).get('error',''))]+[str(e.get('error','')) for e in run.get('events',[]) if e.get('kind')=='model']
+                quota=any('HTTP 429' in message for message in errors)
+                consecutive_quota_failures=consecutive_quota_failures+1 if quota else 0
+                checkpoint('running')
+                if consecutive_quota_failures>=3:
+                    print('Stopped after three consecutive quota failures; remaining runs were not executed.',flush=True)
+                    return target,checkpoint('quota_stopped')
+    return target, checkpoint('complete')
 
 
 def comparison_command(args, parser, root, facts, passages):
@@ -284,12 +298,13 @@ def comparison_command(args, parser, root, facts, passages):
             return 0
         model=Gemini()
         config['model']=model.model
+        config['request_interval_seconds']=model.min_interval
         implementations={'baseline':FixedBaseline,'agent':Agent,'multi':Workflow,
                          'multi_prefetch':lambda *a:Workflow(*a,prefetch_fact=True)}
         systems={name:implementations[name](facts,passages,model,args.max_calls,args.max_turns) for name in selected}
         target,summary=run_comparison(root,cases,systems,args.facts,args.cases,config,repeats,repeat_ids)
         print(json.dumps(summary,indent=2))
         print(f'Comparison saved: {target}')
-        return 0  # factual failures are results; completed execution of the batch is success
+        return 0 if summary['run_status']=='complete' else 2  # factual failures remain valid completed results
     except (ValueError, OSError, ModelError) as error:
         parser.error(str(error))

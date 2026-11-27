@@ -35,6 +35,31 @@ class TraceTests(unittest.TestCase):
 
 
 class WebTests(unittest.TestCase):
+    def test_reviewed_upload_creates_scoped_report_and_pdf(self):
+        from test_memo import ExtractionModel,item
+        from test_workflow import Script,PLAN,APPROVE,protocol
+        class Immediate:
+            def submit(self,fn):fn()
+            def shutdown(self,**kw):pass
+        with TemporaryDirectory() as d:
+            root=Path(d);pdf=demo_memo(root)
+            facts_path=root/'data/facts/observations.json';facts_path.parent.mkdir(parents=True)
+            source=Path(__file__).resolve().parent.parent/'data/facts/observations.json'
+            facts_path.write_bytes(source.read_bytes())
+            app=Application(root);app.executor.shutdown();app.executor=Immediate()
+            extractor=ExtractionModel([{'claims':[item('Microsoft revenue was $245.1B in FY2024.')]},*([{'claims':[]}]*4)])
+            _,calc,draft,reads=protocol()
+            with patch('fincheck.web.Gemini',side_effect=[extractor,Script([PLAN,calc,draft,reads,APPROVE])]):
+                identifier=app.upload({'memo':('memo.pdf',pdf.read_bytes())})
+                claim=app.snapshot(identifier)['claims'][0]
+                app.check(identifier,{'approved_ids':[claim['claim_id']],'system':'multi'})
+            snapshot=app.snapshot(identifier)
+            self.assertEqual(snapshot['status'],'done')
+            self.assertEqual(snapshot['report']['rows'][0]['result']['verified_value'],245.122)
+            self.assertEqual(snapshot['report']['pdf_annotations']['status'],'created')
+            report_artifact=snapshot['report_url'].split('/')[-2]
+            self.assertTrue(app.asset(identifier,report_artifact,'annotated-memo.pdf').is_file())
+
     def test_upload_and_approval_session_pipeline(self):
         class Immediate:
             def submit(self,fn):fn()

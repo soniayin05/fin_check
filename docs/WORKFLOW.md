@@ -114,6 +114,14 @@ available. Export removes raw claims, prompts, model answers, source contents,
 URLs and local filenames, retaining hashes and allowlisted diagnostic fields.
 Actual billing is not read; text-token estimates require user-supplied prices.
 
+GEMINI_MIN_INTERVAL_SECONDS sets request spacing (default one second). Increase
+it for your account's rate limit. Comparison summaries are checkpointed after
+each completed run. Three consecutive HTTP 429 failures stop the batch;
+run_status and completed_runs distinguish partial batches from completed ones.
+Ctrl+C during a system run also saves an interrupted summary. Previously
+completed failures remain in the results. A partial batch is not a full-system
+accuracy comparison, and a successful retry does not erase an earlier run.
+
 These commands implement development experiments. Their results are not final
 held-out evidence. Human review of gold, independently annotated memos, final
 freeze and final evaluation remain required. Optional memory, OCR and multimodal
