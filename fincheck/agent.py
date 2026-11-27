@@ -1,4 +1,4 @@
-"""A bounded single-agent prototype. Multi-agent review is a later milestone."""
+"""Bounded single-agent reference used alongside the access-scoped workflow."""
 
 from datetime import datetime, timezone
 import hashlib
@@ -255,6 +255,7 @@ class Agent:
                                "status": "error" if "error" in output else "ok",
                                "latency_seconds": perf_counter() - tick})
                 if final:
+                    output['evidence_provenance']={k:v.get('source_type','sec_company_facts') for k,v in output.get('sources',{}).items()}
                     return finish("complete", output)
                 response = {"name": name, "response": output}
                 if "id" in call:

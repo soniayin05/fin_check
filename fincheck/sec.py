@@ -6,6 +6,7 @@ SEC fair-access rules: declare a User-Agent with a contact email and stay under
 
 import gzip
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -17,6 +18,22 @@ COMPANIES = {
     "AAPL": {"cik": 320193, "name": "Apple Inc."},
 }
 TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
+
+
+def company_universe(ticker_rows,additional=None):
+    """Keep the reviewed default universe and explicitly add SEC-resolved tickers."""
+    result={k:dict(v) for k,v in COMPANIES.items()}
+    if additional is None:return result
+    if not isinstance(additional,(list,tuple)) or len(additional)>10:
+        raise ValueError('Add up to ten explicit SEC tickers')
+    listed={row['ticker']:row for row in ticker_rows.values()}
+    for raw in additional:
+        ticker=raw.strip().upper()
+        if not re.fullmatch(r'[A-Z0-9.-]{1,12}',ticker) or ticker not in listed:
+            raise ValueError(f'Unknown SEC ticker: {ticker}')
+        row=listed[ticker]
+        result.setdefault(ticker,{'cik':int(row['cik_str']),'name':row['title']})
+    return result
 
 
 class SecError(RuntimeError):

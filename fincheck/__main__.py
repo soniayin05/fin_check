@@ -30,7 +30,7 @@ def facts_path(root: Path, command: str, explicit: Path | None) -> Path:
     if explicit is not None:
         return explicit
     sec = root / "data/facts/observations.json"
-    if command in {"check", "ratio", "verify-number", "compare-systems", "check-memo"} and sec.exists():
+    if command in {"check", "ratio", "verify-number", "compare-systems", "check-memo", "check-workflow", "eval-faults"} and sec.exists():
         return sec
     return root / "data/sample/financial_facts.json"
 
@@ -40,7 +40,8 @@ def main() -> int:
     parser.add_argument("command", choices=["demo", "eval-dev", "prepare-data", "search", "check", "eval-agent-dev",
                                             "facts-report", "ratio", "build-index", "label-retrieval",
                                             "eval-retrieval", "answer-sheet", "score-answers", "verify-number", "compare-systems",
-                                            "demo-memo", "ingest-memo", "extract-memo", "check-memo"])
+                                            "demo-memo", "ingest-memo", "extract-memo", "check-memo",
+                                            "check-workflow", "eval-faults", "traces", "export-traces", "serve"])
     parser.add_argument("text", nargs="?", help="Claim for check, keywords for search, or a sheet for score-answers")
     parser.add_argument("--include-sec", action="store_true",
                         help="Also archive SEC Company Facts, 10-K filings and earnings releases")
@@ -75,16 +76,34 @@ def main() -> int:
     parser.add_argument("--memo-model-budget",type=int,default=20,help="Logical model-call budget per extraction or checking stage")
     parser.add_argument("--memo-tool-budget",type=int,default=36,help="Shared tool budget across memo claims")
     parser.add_argument("--approve-extracted",action="store_true",help="Confirm that you reviewed the extracted quotes and scope before checking")
+    parser.add_argument('--systems',default='baseline,agent',help='Comparison systems: baseline,agent,multi,multi_prefetch')
+    parser.add_argument('--system',choices=['agent','multi'],default='multi',help='Memo verifier capability mode')
+    parser.add_argument('--no-plan',action='store_true',help='Workflow ablation: disable explicit planning and automatic recovery')
+    parser.add_argument('--trace-scope',help='Filter traces by capability scope')
+    parser.add_argument('--trace-tool',help='Filter traces by tool name')
+    parser.add_argument('--trace-status',help='Filter traces by run status')
+    parser.add_argument('--port',type=int,default=8765,help='Local upload interface port')
+    parser.add_argument('--tickers',help='Additional SEC tickers for prepare-data --include-sec (up to ten)')
     args = parser.parse_args()
     if args.cases is None:
-        args.cases = ROOT / ('evals/dev/claims_stage4.jsonl' if args.command == 'compare-systems' else 'evals/dev/claims.jsonl')
+        args.cases = ROOT / ('evals/faults/cases.jsonl' if args.command=='eval-faults' else
+                            'evals/dev/claims_stage4.jsonl' if args.command == 'compare-systems' else 'evals/dev/claims.jsonl')
     args.facts = facts_path(ROOT, args.command, args.facts)
     load_env(ROOT)
+    if args.command in {'traces','export-traces'}:
+        from .trace_tools import summaries,export_summaries
+        rows=summaries(ROOT,args.trace_scope,args.trace_tool,args.trace_status,args.text)
+        print(json.dumps(rows,indent=2) if args.command=='traces' else str(export_summaries(ROOT,rows)))
+        return 0
+    if args.command=='serve':
+        from .web import serve
+        serve(ROOT,args.port);return 0
     if args.command in {'demo-memo','ingest-memo','extract-memo','check-memo'}:
         return memo_command(args,parser,ROOT)
     if args.command == "prepare-data":
+        if args.tickers and not args.include_sec:parser.error('--tickers requires --include-sec')
         try:
-            result = prepare(ROOT, args.include_sec)
+            result = prepare(ROOT, args.include_sec,tickers=args.tickers.split(',') if args.tickers else None)
         except (SecError, ValueError) as error:
             print(f"Data preparation failed: {error}")
             return 1
@@ -115,14 +134,14 @@ def main() -> int:
     index_path = ROOT / "data/indexes/passages.json"
     embedder = None
     if args.command in {"search", "build-index", "label-retrieval", "eval-retrieval", "answer-sheet",
-                        "check", "eval-agent-dev", "compare-systems"}:  # offline commands never depend on embedding settings
+                        "check", "eval-agent-dev", "compare-systems", "check-workflow", "eval-faults"}:  # offline commands never depend on embedding settings
         try:
             embedder = gemini_embedder(ROOT) if not args.dry_run else None
         except ModelError as error:
             print(str(error))
             return 1
     passages = PassageStore(index_path, embedder=embedder)
-    if args.command == 'compare-systems' and args.method:
+    if args.command in {'compare-systems','check-workflow','eval-faults'} and args.method:
         passages.default_method = args.method
     if args.command in {"search", "build-index", "label-retrieval", "eval-retrieval", "answer-sheet"} \
             and not passages.passages:
@@ -140,6 +159,20 @@ def main() -> int:
         parser.error(f"Cannot load facts from {args.facts}: {error}")
     if args.command == 'compare-systems':
         return comparison_command(args, parser, ROOT, store, passages)
+    if args.command=='eval-faults':
+        from .fault_eval import fault_command
+        return fault_command(args,parser,ROOT,store,passages)
+    if args.command=='check-workflow':
+        from .workflow import Workflow,CAPABILITIES
+        if not args.text:parser.error('check-workflow requires a quoted claim')
+        if args.dry_run:
+            permissions={k:sorted(v-{'get_financial_fact'} if k=='evidence' else v) for k,v in CAPABILITIES.items()}
+            print(json.dumps({'scope_permissions':permissions,'model_calls_made':0},indent=2));return 0
+        try:run=Workflow(store,passages,Gemini(),args.max_calls,args.max_turns,require_plan=not args.no_plan).run(args.text)
+        except (ValueError,ModelError) as error:parser.error(str(error))
+        path=save_run(ROOT,run,args.facts)
+        print(json.dumps({'status':run['status'],'result':run['result']},indent=2));print(f'Trace: {path}')
+        return 0 if run['status']=='complete' else 1
     if args.command == "verify-number":
         if args.measure is None or args.value is None or args.unit is None:
             parser.error("verify-number requires --measure, --value and --unit")

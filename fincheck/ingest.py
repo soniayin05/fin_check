@@ -16,7 +16,7 @@ import urllib.request
 from .facts import coverage_table, merge, normalize
 from .filings import filing_rows, pick_exhibit, select_annual_reports, select_earnings_release
 from .retrieval import chunk_passages, parse_filing
-from .sec import COMPANIES, TICKERS_URL, SecClient, SecError, archive_url, facts_url, submissions_url
+from .sec import COMPANIES, TICKERS_URL, SecClient, SecError, archive_url, facts_url, submissions_url, company_universe
 
 REPORT_URL = "https://www.microsoft.com/investor/reports/ar24/index.html"
 ANNUAL_REPORTS = 3   # 10-K filings archived per company
@@ -87,14 +87,15 @@ def _all_filings(archive: Archive, client, ticker: str, cik: int, need: int) -> 
     return rows
 
 
-def prepare_sec(root: Path, archive: Archive, client=None) -> tuple[list[dict], dict]:
+def prepare_sec(root: Path, archive: Archive, client=None, tickers=None) -> tuple[list[dict], dict]:
     """Download Company Facts, 10-Ks and earnings releases for every supported company."""
     client = client or SecClient()
     tickers_path = archive.fetch("sec-company-tickers.json", TICKERS_URL, client.get, _check_json,
                                  kind="ticker_map")
     listed = {row["ticker"]: int(row["cik_str"]) for row in json.loads(tickers_path.read_text()).values()}
+    universe=company_universe(json.loads(tickers_path.read_text()),tickers)
     passages, results, problems, documents = [], [], [], []
-    for ticker, info in COMPANIES.items():
+    for ticker, info in universe.items():
         cik = info["cik"]
         if listed.get(ticker) != cik:
             raise ValueError(f"{ticker}: configured CIK {cik} does not match SEC ticker file ({listed.get(ticker)})")
@@ -145,17 +146,18 @@ def prepare_sec(root: Path, archive: Archive, client=None) -> tuple[list[dict], 
     (facts_dir / "observations.json").write_text(json.dumps(merge(results), indent=1) + "\n")
     coverage = [row for result in results for row in result["coverage"]]
     (facts_dir / "coverage.json").write_text(json.dumps(
-        {"calendar": {t: r["calendar"] for t, r in zip(COMPANIES, results)}, "coverage": coverage},
+        {"calendar": {t: r["calendar"] for t, r in zip(universe, results)}, "coverage": coverage},
         indent=1) + "\n")
     summary = {"observations": sum(len(r["observations"]) for r in results),
                "missing": sum(row["status"] == "missing" for row in coverage),
                "conflicts": sum(row["status"] == "conflict" for row in coverage),
                "documents": len(documents), "problems": problems, "sec_requests": getattr(client, "requests", None),
-               "facts": str(facts_dir / "observations.json"), "coverage_table": coverage_table(coverage)}
+               "facts": str(facts_dir / "observations.json"), "coverage_table": coverage_table(coverage),
+               "company_universe":universe}
     return passages, summary
 
 
-def prepare(root: Path, include_sec: bool = False, client=None, report_getter=_plain_get) -> dict:
+def prepare(root: Path, include_sec: bool = False, client=None, report_getter=_plain_get,tickers=None) -> dict:
     raw = root / "data/raw"
     index = root / "data/indexes"
     raw.mkdir(parents=True, exist_ok=True)
@@ -171,7 +173,7 @@ def prepare(root: Path, include_sec: bool = False, client=None, report_getter=_p
               "note": "Numeric tool uses the reviewed sample extract. Run with --include-sec for SEC data."}
     if include_sec:
         try:
-            sec_passages, summary = prepare_sec(root, archive, client)
+            sec_passages, summary = prepare_sec(root, archive, client,tickers)
         finally:
             archive.save()  # keep what was fetched even if a later step failed
         passages += sec_passages

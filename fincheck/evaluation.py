@@ -135,9 +135,10 @@ def usage_summary(run, pricing=None):
 
 def summarize(rows):
     primary = [r for r in rows if r['repeat'] == 0]
-    summary = {'systems': {}, 'primary_cases': len(primary)//2,
+    names=sorted({r['system'] for r in rows})
+    summary = {'systems': {}, 'primary_cases': len({r['case_id'] for r in primary}),
                'additional_runs': len(rows)-len(primary), 'failure_categories': {}}
-    for system in ('baseline', 'agent'):
+    for system in names:
         selected = [r for r in primary if r['system'] == system]
         n, passed = len(selected), sum(r['score']['passed'] for r in selected)
         latency = [r['latency_seconds'] for r in selected]
@@ -150,6 +151,10 @@ def summarize(rows):
             tool_calls=sum(r['tool_calls'] for r in selected),
             execution_errors=sum(r['status']=='error' for r in selected),
             incomplete=sum(r['status']=='incomplete' for r in selected))
+        if any('fault_injected' in r for r in selected):
+            summary['systems'][system].update(fault_injected=sum(r.get('fault_injected',False) for r in selected),
+                fault_recovered=sum(r.get('fault_recovered',False) for r in selected),
+                not_injected=sum(not r.get('fault_injected',False) for r in selected))
         failures = {}
         for r in selected:
             for category in r['score']['failures']:
@@ -158,8 +163,13 @@ def summarize(rows):
     paired = {r['case_id']: {} for r in primary}
     for r in primary:
         paired[r['case_id']][r['system']] = int(r['score']['passed'])
-    pairs = [p for p in paired.values() if set(p)=={'agent','baseline'}]
+    pairs = [p for p in paired.values() if 'agent' in p and 'baseline' in p]
     summary['agent_minus_baseline'] = paired_bootstrap([p['agent'] for p in pairs], [p['baseline'] for p in pairs]) if pairs else None
+    summary['paired_comparisons']={}
+    for i,a in enumerate(names):
+        for b in names[i+1:]:
+            paired_rows=[p for p in paired.values() if a in p and b in p]
+            if paired_rows:summary['paired_comparisons'][a+'_minus_'+b]=paired_bootstrap([p[a] for p in paired_rows],[p[b] for p in paired_rows])
     summary['repeated_cases'] = {}
     for r in rows:
         key = r['case_id']+':'+r['system']
@@ -178,8 +188,8 @@ def redact(text):
 
 
 def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats=1, repeat_ids=()):
-    if set(systems) != {'baseline', 'agent'}:
-        raise ValueError('Both baseline and agent are required')
+    if len(systems)<2:
+        raise ValueError('At least two systems are required')
     if repeats < 1 or set(repeat_ids)-{c['id'] for c in cases}:
         raise ValueError('Invalid repeat count or unknown repeated case ID')
     run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
@@ -201,7 +211,9 @@ def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats
         for i, case in enumerate(cases):
             if repeat and case['id'] not in repeat_ids:
                 continue
-            order = ('baseline','agent') if (i+repeat)%2==0 else ('agent','baseline')
+            names=list(systems)
+            offset=(i+repeat)%len(names)
+            order=names[offset:]+names[:offset]
             for name in order:
                 tick=perf_counter()
                 try:
@@ -215,6 +227,10 @@ def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats
                          score=score_run(run,case['expected']),trace=str(trace),
                          latency_seconds=run['latency_seconds'],tool_calls=run['tool_calls'],
                          usage=usage_summary(run,config.get('pricing')))
+                injected=run.get('fault_injections',[])
+                if run.get('fault_requested'):
+                    row.update(fault_injected=bool(injected),fault_recovered=bool(injected) and run['status']=='complete',
+                               fault_task_success=bool(injected) and row['score']['passed'])
                 rows.append(row)
                 with (target/'results.jsonl').open('a') as file:
                     file.write(redact(json.dumps(row,allow_nan=False))+'\n')
@@ -228,6 +244,7 @@ def comparison_command(args, parser, root, facts, passages):
     from .agent import Agent
     from .baseline import FixedBaseline
     from .model import Gemini, ModelError
+    from .workflow import Workflow
     try:
         cases=load_cases(args.cases)
         if args.only:
@@ -257,14 +274,19 @@ def comparison_command(args, parser, root, facts, passages):
                 raise ValueError(f"{case['id']}: acceptable evidence absent; restore the frozen corpus or review gold labels")
         config=dict(max_calls=args.max_calls,max_turns=args.max_turns,retriever=passages.default_method,
                     temperature=0,pricing=pricing,case_ids=[c['id'] for c in cases])
+        selected=args.systems.split(',')
+        if len(set(selected))!=len(selected) or len(selected)<2 or set(selected)-{'baseline','agent','multi','multi_prefetch'}:
+            raise ValueError('Choose distinct systems: baseline,agent,multi,multi_prefetch')
+        config['systems']=selected
         if args.dry_run:
-            print(json.dumps(dict(config,cases=len(cases),scheduled_runs=2*(len(cases)+(repeats-1)*len(repeat_ids)),
+            print(json.dumps(dict(config,cases=len(cases),scheduled_runs=len(selected)*(len(cases)+(repeats-1)*len(repeat_ids)),
                                   model_calls_made=0,facts=str(args.facts),cases_path=str(args.cases)),indent=2))
             return 0
         model=Gemini()
         config['model']=model.model
-        systems={name:cls(facts,passages,model,args.max_calls,args.max_turns)
-                 for name,cls in [('baseline',FixedBaseline),('agent',Agent)]}
+        implementations={'baseline':FixedBaseline,'agent':Agent,'multi':Workflow,
+                         'multi_prefetch':lambda *a:Workflow(*a,prefetch_fact=True)}
+        systems={name:implementations[name](facts,passages,model,args.max_calls,args.max_turns) for name in selected}
         target,summary=run_comparison(root,cases,systems,args.facts,args.cases,config,repeats,repeat_ids)
         print(json.dumps(summary,indent=2))
         print(f'Comparison saved: {target}')

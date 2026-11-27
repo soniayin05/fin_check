@@ -11,8 +11,9 @@ has an older checkout with separate Git state and configuration.
 | Numeric agent tools | Merged into main | Broader claim interpretation evaluation |
 | Baseline and evaluation runner | Implemented: fixed two-stage baseline, shared scope/evidence/numeric scoring, repetitions, traces and statistics | Review 12 new dev claim variants; run full comparison and preselected repetitions; final held-out set later |
 | Memo workflow | Implemented: PDF text/page images, exact-quote extraction, approval/qualifier gates, shared checking budgets, JSON/HTML report | Independently annotated multi-page memos, extraction coverage/atomicity/qualifier evaluation, scans/charts/OCR |
-| Reviewer workflow | Pending | Explicit tool/state permissions, shared budget, bounded repairs and worker failure handling |
-| Recovery and observability experiments | Pending | Fault cases, recovery comparison, trace search and measured optimization |
+| Reviewer workflow | Implemented: capability permissions, original-source read tracking, shared budgets and bounded repairs | Full development comparison, representative help/hurt cases and final held-out evaluation |
+| Recovery and observability experiments | Implemented: fifteen fault fixtures, retry/replan policy, trace search/export and prefetch optimization comparison | Run and interpret the complete fault and optimization experiments; final reporting |
+| Local interface | Implemented: PDF upload, claim approval, single/scoped checking, supplementary sources and annotated PDF | User acceptance/visual review and independent memo evaluation |
 | Final evaluation and delivery | Pending | Freeze sources/configuration/scoring, held-out run, interface/demo and write-up |
 
 ## Numeric tool stage
@@ -61,9 +62,8 @@ model configuration in the active checkout's `.env` for ordinary CLI runs.
 
 ## Next stage
 
-Exercise the PDF workflow in `docs/MEMO.md`, review extracted claims against page
-images, and evaluate coverage on independently annotated memos. Then implement
-the permission-separated reviewer workflow. The full shared comparison and
+Exercise `docs/WORKFLOW.md` and review claims against page images. Evaluate
+coverage on independently annotated memos. The full shared comparison and
 embedding/hybrid retrieval experiment also remain pending. Keep gold out of
 model/tool inputs; original sample development cases stay separate.
 Budget exhaustion yields `incomplete`; completed missing-evidence checks can

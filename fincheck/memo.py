@@ -75,6 +75,7 @@ def ingest_pdf(path, target, max_pages=10):
         if not 1 <= len(doc) <= max_pages:
             raise ValueError(f'PDF has {len(doc)} pages; configured limit is {max_pages}')
         (target/'pages').mkdir(parents=True, exist_ok=True)
+        (target/'source.pdf').write_bytes(path.read_bytes())
         pages=[]
         for n, page in enumerate(doc, 1):
             text = page.get_text('text', sort=True)
@@ -204,7 +205,7 @@ def extract_claims(memo, model, target, context=None, max_claims=12, model_budge
 
 
 def check_claims(root, claims_path, facts, passages, model, facts_path, approve=False,
-                 model_budget=20,tool_budget=36,max_turns=10,max_calls=12):
+                 model_budget=20,tool_budget=36,max_turns=10,max_calls=12,system='agent'):
     if not all(type(v) is int and 1<=v<=100 for v in [model_budget,tool_budget,max_turns,max_calls]):
         raise ValueError('Budgets must be integers from 1 to 100')
     path=Path(claims_path)
@@ -243,7 +244,10 @@ def check_claims(root, claims_path, facts, passages, model, facts_path, approve=
                 # The exact quotation is verified, with scope hints explicitly marked as context.
                 claim=('Memo context (reviewed hints, not external evidence): '+json.dumps(
                     dict(company=item['company'],period=item['period']))+'\nVerify this verbatim memo quotation:\n'+item['quote'])
-                agent=Agent(facts,passages,model,min(max_calls,tool_budget-used_tools),
+                from .workflow import Workflow
+                if system not in {'agent','multi'}:raise ValueError('Unknown memo system')
+                implementation=Workflow if system=='multi' else Agent
+                agent=implementation(facts,passages,model,min(max_calls,tool_budget-used_tools),
                             min(max_turns,model_budget-used_model))
                 run=agent.run(claim)
                 used_tools+=run['tool_calls']
@@ -260,11 +264,13 @@ def check_claims(root, claims_path, facts, passages, model, facts_path, approve=
                 claims_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),rows=rows,
                 facts_sha256=hashlib.sha256(Path(facts_path).read_bytes()).hexdigest(),
                 model=model.model,retriever=passages.default_method,
+                system=system,
                 approval_mode='all_extracted_user_confirmed' if approve else 'individual_claim_flags',
                 extraction_issues=bundle['issues'],page_warnings=warnings,
                 verification_model_calls=used_model,verification_tool_calls=used_tools,
                 model_budget=model_budget,tool_budget=tool_budget,
                 note='Extraction calls are recorded separately in claims.json. This report is not an investment recommendation.')
+    result['pdf_annotations']=annotate_pdf(path.parent/'source.pdf',target,result)
     write_json(target/'report.json',result)
     render_report(target,memo,result,path.parent)
     return target,result
@@ -279,18 +285,47 @@ def render_report(target,memo,result,ingest_dir):
         image=os.path.relpath(ingest_dir/f"pages/page-{page_number:03d}.png",target) if valid_page else ''
         value=output.get('verified_value')
         verified='' if value is None else f"Verified: {value} {output.get('verified_unit','')}"
-        evidence=''.join('<li>'+escape(str(k))+'</li>' for k in output.get('sources',{}))
+        evidence=''
+        for key,source in output.get('sources',{}).items():
+            url=source.get('url','')
+            label=escape(str(key))
+            if isinstance(url,str) and url.startswith('https://'):
+                label='<a href="'+escape(url,quote=True)+'" target="_blank" rel="noopener noreferrer">'+label+'</a>'
+            evidence+='<li>'+label+'</li>'
+        if any(s.get('source_type')=='user_supplied' for s in output.get('sources',{}).values()):
+            evidence+='<li>Includes user-supplied evidence; authenticity is not independently validated.</li>'
         sections.append('<article><h2>'+escape(str(item.get('claim_id','invalid claim')))+' — page '+escape(str(page_number))+
             '</h2><blockquote>'+escape(str(item.get('quote','')))+'</blockquote><p>'+escape(row['status'])+
             ': '+escape(output.get('verdict',row.get('reason','')))+
             '</p><p>'+escape(verified)+'</p><p>'+escape(output.get('explanation',''))+
             '</p><ul>'+evidence+'</ul>'+('<a href="'+escape(image,quote=True)+'">View source page</a>' if image else '<p>Source page unavailable</p>')+'</article>')
+    download='<p><a href="annotated-memo.pdf">Download annotated PDF</a></p>' if (target/'annotated-memo.pdf').exists() else ''
     html='''<!doctype html><html lang="en"><meta charset="utf-8"><title>FinCheck memo review</title>
 <style>body{font:16px system-ui;max-width:960px;margin:40px auto;padding:0 24px;color:#182537}
 article{border:1px solid #cbd5e1;padding:20px;margin:20px 0;break-inside:avoid}
 blockquote{white-space:pre-wrap;margin:12px 0;padding:12px;background:#f1f5f9}h2{font-size:18px}</style>
-<h1>FinCheck memo review</h1><p>Overall status: '''+escape(result['status'])+'</p><p>'+escape(memo['source_name'])+'</p>'+''.join(sections)+'''<p>Text extraction can miss chart, table or scanned content. Review page images and the JSON report's warnings.</p></html>'''
+<h1>FinCheck memo review</h1><p>Overall status: '''+escape(result['status'])+'</p><p>'+escape(memo['source_name'])+'</p>'+download+''.join(sections)+'''<p>Text extraction can miss chart, table or scanned content. Review page images and the JSON report's warnings.</p></html>'''
     (target/'report.html').write_text(html)
+
+
+def annotate_pdf(source,target,result):
+    if not source.exists():return {'status':'unavailable','reason':'Re-ingest this older artifact to create a source PDF copy'}
+    module=pdf_module();annotations=[]
+    colors={'supported':(0.2,0.75,0.35),'contradicted':(0.95,0.25,0.2),'needs_review':(0.95,0.75,0.15)}
+    with module.open(str(source)) as doc:
+        for row in result['rows']:
+            item=row['claim'];number=item.get('page')
+            if type(number) is not int or not 1<=number<=len(doc):continue
+            page=doc[number-1];output=row.get('result',{});status=output.get('verdict',row['status'])
+            quads=page.search_for(item.get('quote',''),quads=True) if item.get('quote') else []
+            annotation=page.add_highlight_annot(quads) if quads else page.add_text_annot(module.Point(16,16),item.get('quote',''))
+            annotation.set_colors(stroke=colors.get(status,(0.6,0.6,0.6)))
+            text=status+'\n'+output.get('explanation',row.get('reason',''))+'\nEvidence: '+', '.join(output.get('sources',{}))
+            annotation.set_info(title='FinCheck',content=text);annotation.update()
+            annotations.append(dict(claim_id=item.get('claim_id'),page=number,status=status,
+                                    location='highlight' if quads else 'page_note_quote_not_located'))
+        doc.save(str(target/'annotated-memo.pdf'))
+    return {'status':'created','claims':annotations}
 
 
 def demo_memo(target):
@@ -358,7 +393,7 @@ def memo_command(args,parser,root):
         if args.method:passages.default_method=args.method
         target,result=check_claims(root,Path(args.text),facts,passages,Gemini(),args.facts,
             approve=args.approve_extracted,model_budget=args.memo_model_budget,
-            tool_budget=args.memo_tool_budget,max_turns=args.max_turns,max_calls=args.max_calls)
+            tool_budget=args.memo_tool_budget,max_turns=args.max_turns,max_calls=args.max_calls,system=args.system)
         print(json.dumps(dict(status=result['status'],claims=len(result['rows']),
                              model_calls=result['verification_model_calls'],tool_calls=result['verification_tool_calls']),indent=2))
         print(f'Report: {target / "report.html"}')

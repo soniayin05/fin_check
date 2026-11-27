@@ -3,7 +3,8 @@
 The memo stage accepts PDFs, saves page text and PNG previews, extracts quoted
 claims, then checks approved claims through the existing single agent. It emits
 a JSON report and an HTML report linking each quote to its source page image.
-The report is an annotation companion; it does not modify the original PDF.
+The original PDF is preserved. A separate annotated copy highlights located
+quotations and records verdicts/source details; HTML/JSON retain full results.
 
 ## Setup
 
@@ -71,7 +72,7 @@ correct fiscal interpretation, chart coverage or preserved cross-line qualifiers
 
 ```bash
 python3 -m fincheck check-memo "/absolute/path/claims.json" --dry-run
-python3 -m fincheck check-memo "/absolute/path/claims.json" --approve-extracted --memo-model-budget 20 --memo-tool-budget 36
+python3 -m fincheck check-memo "/absolute/path/claims.json" --approve-extracted --system multi --memo-model-budget 40 --memo-tool-budget 60
 ```
 
 Use the exact `claims.json` path printed by extraction. Memo/source hashes,
@@ -114,7 +115,7 @@ with image/OCR evaluation. This is not a completed rubric experiment.
 
 All memo files, page images, extraction traces and reports stay under ignored
 local artifacts. Review/redact before explicitly exporting final evidence.
-The next architecture stage is a permission-separated reviewer workflow.
+The permission-scoped workflow and upload interface are described in `docs/WORKFLOW.md`.
 
 ## Recorded development checks (November 27)
 
