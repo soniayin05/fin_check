@@ -96,6 +96,7 @@ dataset/index and requires revalidation; do not do it after a final freeze.
 python3 -m fincheck eval-faults --dry-run
 python3 -m fincheck eval-faults --method keyword
 python3 -m fincheck traces --trace-scope review
+python3 -m fincheck traces s4-001
 python3 -m fincheck traces --trace-tool calculate --trace-status incomplete
 python3 -m fincheck export-traces
 ```
@@ -110,8 +111,10 @@ Runs where the target tool was never called are reported as not injected.
 Execution recovery and scored task success are different outcomes.
 
 Trace search returns scope/tool timings, status and provider usage where
-available. Export removes raw claims, prompts, model answers, source contents,
-URLs and local filenames, retaining hashes and allowlisted diagnostic fields.
+available. Its text filter matches claims or case IDs; older comparison traces
+are resolved through their saved case rows after artifact relocation. Export
+removes raw claims, case IDs, prompts, model answers, source contents, URLs and
+local filenames, retaining hashes and allowlisted diagnostic fields.
 Actual billing is not read; text-token estimates require user-supplied prices.
 
 GEMINI_MIN_INTERVAL_SECONDS sets request spacing (default one second). Increase

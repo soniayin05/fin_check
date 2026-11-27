@@ -9,12 +9,19 @@ has an older checkout with separate Git state and configuration.
 | SEC data | Pipeline and 546-row snapshot merged; 15 FY2024 core observations manually reconciled | Broader reconciliation; verify annual earnings-release selection |
 | Retrieval | Five methods implemented; 23 AI-assisted labels confirmed by Sonia; preliminary keyword/TF-IDF/BM25 comparison run | Resolve rq-07/rq-21, review rq-23 wording, pool embedding/hybrid candidates and run answer experiment |
 | Numeric agent tools | Merged into main | Broader claim interpretation evaluation |
-| Baseline and evaluation runner | Implemented: fixed two-stage baseline, shared scope/evidence/numeric scoring, repetitions, traces and statistics | Review 12 new dev claim variants; run full comparison and preselected repetitions; final held-out set later |
+| Baseline and evaluation runner | Implemented: fixed baseline, shared scoring, repetitions, traces/statistics; full development batch recorded | Review 12 new variants and preselect repetitions; final frozen/held-out evaluation later |
 | Memo workflow | Implemented: PDF text/page images, exact-quote extraction, approval/qualifier gates, shared checking budgets, JSON/HTML report | Independently annotated multi-page memos, extraction coverage/atomicity/qualifier evaluation, scans/charts/OCR |
-| Reviewer workflow | Implemented: capability permissions, original-source read tracking, shared budgets and bounded repairs | Full development comparison, representative help/hurt cases and final held-out evaluation |
-| Recovery and observability experiments | Implemented: fifteen fault fixtures, retry/replan policy, trace search/export and prefetch optimization comparison | Run and interpret the complete fault and optimization experiments; final reporting |
+| Reviewer workflow | Implemented: capability permissions, original-source reads, shared budgets/repairs; full development comparison recorded | Review gold and complete the final frozen evaluation; development results do not show a multi-agent advantage |
+| Recovery and observability experiments | Implemented: fifteen faults, recovery policy, case/scope/tool trace search and redacted export; full fault and prefetch contrast recorded | Final reporting; observed call reduction did not establish latency or quality gains |
 | Local interface | Implemented: PDF upload, claim approval, single/scoped checking, supplementary sources and annotated PDF | User acceptance/visual review and independent memo evaluation |
-| Final evaluation and delivery | Pending | Freeze sources/configuration/scoring, held-out run, interface/demo and write-up |
+| Final evaluation and delivery | Freeze and guarded held-out commands implemented; final evaluation pending | Independently reviewed gold, final freeze, held-out run, interface/demo and write-up |
+
+November 27 evidence is documented in `docs/DEVELOPMENT_2026-11-27.md`.
+The full initial comparison passed baseline 10/12, single agent 8/12 and scoped
+workflow 7/12; later fixes and targeted reruns are kept separately. The fault
+batch passed 11/15 with planning/recovery and 0/15 with both disabled. Three
+injections were not reached because of execution failures and are not reported
+as recoveries. These are inspected development runs, not held-out credit.
 
 ## Numeric tool stage
 
@@ -63,8 +70,8 @@ model configuration in the active checkout's `.env` for ordinary CLI runs.
 ## Next stage
 
 Exercise `docs/WORKFLOW.md` and review claims against page images. Evaluate
-coverage on independently annotated memos. The full shared comparison and
-embedding/hybrid retrieval experiment also remain pending. Keep gold out of
+coverage on independently annotated memos. The final frozen comparison and
+embedding/hybrid candidate review also remain pending. Keep gold out of
 model/tool inputs; original sample development cases stay separate.
 Budget exhaustion yields `incomplete`; completed missing-evidence checks can
 yield `insufficient_evidence`.

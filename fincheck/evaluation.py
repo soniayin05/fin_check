@@ -231,6 +231,7 @@ def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats
                     run=dict(claim=case['claim'],status='error',result={'error':type(error).__name__},
                              events=[],tool_calls=0,latency_seconds=perf_counter()-tick,
                              model=getattr(systems[name].model,'model',None))
+                run.update(case_id=case['id'],system=name,repeat=repeat)
                 trace=save_run(Path(root),run,Path(facts_path))
                 row=dict(case_id=case['id'],system=name,repeat=repeat,status=run['status'],
                          score=score_run(run,case['expected']),trace=str(trace),
@@ -248,7 +249,7 @@ def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats
                 quota=any('HTTP 429' in message for message in errors)
                 consecutive_quota_failures=consecutive_quota_failures+1 if quota else 0
                 checkpoint('running')
-                if consecutive_quota_failures>=3:
+                if consecutive_quota_failures>=3 and len(rows)<scheduled:
                     print('Stopped after three consecutive quota failures; remaining runs were not executed.',flush=True)
                     return target,checkpoint('quota_stopped')
     return target, checkpoint('complete')

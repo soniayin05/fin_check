@@ -20,18 +20,32 @@ class TraceTests(unittest.TestCase):
         with TemporaryDirectory() as d:
             root=Path(d);target=root/'artifacts/local/private';target.mkdir(parents=True)
             secret='private@example.com'
-            trace=dict(claim=secret,status='complete',model='valid-model',events=[
+            trace=dict(claim=secret,case_id='s4-001',status='complete',model='valid-model',events=[
                 dict(kind='tool',scope='review',name='read_evidence',status='ok',input={'quote':secret},output={'text':secret}),
                 dict(kind='model',scope='review',status='ok',output={'usage':{'totalTokenCount':2,'private':secret}}),
                 dict(kind='tool',scope=secret,name=secret,status=secret,input=secret)])
             write_json(target/'trace.json',trace)
             rows=summaries(root,scope='review',tool='read_evidence')
             self.assertEqual(len(rows),1)
+            self.assertEqual(len(summaries(root,claim_filter='s4-001')),1)
             all_rows=summaries(root)
             path=export_summaries(root,all_rows)
             self.assertNotIn(secret,path.read_text())
             self.assertNotIn('private/',path.read_text())
+            self.assertNotIn('s4-001',path.read_text())
             self.assertEqual(len(summaries(root,status='error')),0)
+
+    def test_legacy_case_search_survives_artifact_relocation(self):
+        with TemporaryDirectory() as d:
+            root=Path(d);trace=root/'artifacts/local/run-1/trace.json';trace.parent.mkdir(parents=True)
+            write_json(trace,dict(claim='A claim',status='complete',events=[]))
+            comparison=root/'artifacts/local/comparison-1';comparison.mkdir()
+            (comparison/'results.jsonl').write_text(json.dumps(dict(case_id='s4-legacy',system='multi',trace='/old/private/path/run-1/trace.json'))+'\n')
+            rows=summaries(root,claim_filter='s4-legacy')
+            self.assertEqual(len(rows),1)
+            self.assertEqual(rows[0]['case_id'],'s4-legacy')
+            path=export_summaries(root,rows)
+            self.assertNotIn('s4-legacy',path.read_text())
 
 
 class WebTests(unittest.TestCase):

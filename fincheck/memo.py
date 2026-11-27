@@ -250,6 +250,7 @@ def check_claims(root, claims_path, facts, passages, model, facts_path, approve=
                 agent=implementation(facts,passages,model,min(max_calls,tool_budget-used_tools),
                             min(max_turns,model_budget-used_model))
                 run=agent.run(claim)
+                run.update(case_id=item['claim_id'],system=system)
                 used_tools+=run['tool_calls']
                 used_model+=sum(e['kind']=='model' for e in run['events'])
                 trace=save_run(Path(root),run,Path(facts_path))

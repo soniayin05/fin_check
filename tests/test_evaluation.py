@@ -81,6 +81,23 @@ class BaselineTests(unittest.TestCase):
 
 
 class ScoringTests(unittest.TestCase):
+    def test_last_row_quota_failures_do_not_mark_a_finished_batch_partial(self):
+        calls=[]
+        class Stub:
+            model=ScriptedModel([])
+            def run(self,claim):
+                calls.append(claim);quota=len(calls)>1
+                return dict(claim=claim,status='error' if quota else 'complete',
+                    result={'error':'Gemini HTTP 429. Check quota.'} if quota else {'verdict':'insufficient_evidence'},
+                    events=[],tool_calls=0,latency_seconds=.1,model=self.model.model)
+        cases=[dict(id=str(n),claim='claim '+str(n),expected={'verdict':'insufficient_evidence'}) for n in range(2)]
+        with TemporaryDirectory() as d:
+            root=Path(d);path=root/'cases.jsonl';path.write_text('\n'.join(json.dumps(c) for c in cases))
+            with patch('builtins.print'):
+                _,summary=run_comparison(root,cases,{'baseline':Stub(),'agent':Stub()},FACTS,path,{})
+            self.assertEqual(summary['completed_runs'],4)
+            self.assertEqual(summary['run_status'],'complete')
+
     def test_quota_stops_batch_and_interrupt_saves_partial_summary(self):
         class Stub:
             model=ScriptedModel([])
@@ -164,6 +181,8 @@ class ScoringTests(unittest.TestCase):
             self.assertEqual(summary['systems']['agent']['total'],2)
             self.assertEqual(summary['agent_minus_baseline']['both'],2)
             self.assertEqual(len((target/'results.jsonl').read_text().splitlines()),8)
+            first=json.loads((target/'results.jsonl').read_text().splitlines()[0])
+            self.assertEqual(json.loads(Path(first['trace']).read_text())['case_id'],'a')
             self.assertEqual(systems['agent'].seen,['claim a','claim b','claim a','claim a'])
             self.assertNotIn('NEVER SEND', ''.join(systems['agent'].seen))
 

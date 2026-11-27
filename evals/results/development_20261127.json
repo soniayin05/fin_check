@@ -1,0 +1,3904 @@
+{
+  "date": "2026-11-27",
+  "split": "development_only",
+  "offline_tests_passed": 137,
+  "deterministic_checks_passed": 3,
+  "qualifications": [
+    "New claim variants are draft development gold derived from reviewed sources; not independent held-out evaluation.",
+    "The full three-system batch predates the later growth-instruction clarification. The subsequent two-case smoke is separate, never pooled.",
+    "Fault fixtures and scripted protocol tests are not real-world fault frequencies. Not-injected cases are reported separately.",
+    "The no-plan ablation disables explicit planning and automatic recovery together.",
+    "The prefetch contrast varies tool availability under common current prompts, not an exact replay of an older full implementation.",
+    "The prefetch runner marked quota_stopped on its final row, but all 24 scheduled runs exist. This status-only bug was subsequently fixed; original results are preserved.",
+    "Latencies include provider waits/retries. No user-verified prices were configured; actual billing is not measured.",
+    "Retrieval labels were pooled with keyword, TF-IDF and BM25. Any embedding/hybrid result needs additional candidate review before a final fair comparison.",
+    "Raw traces and source/PDF contents remain local and are excluded from this export."
+  ],
+  "comparisons": [
+    {
+      "run_id": "20261127T185155321096Z",
+      "configuration": {
+        "git_commit": "18545b99b9051ad84869ac8ee56275f2c55ed103",
+        "model": "gemini-3.5-flash-lite",
+        "max_calls": 12,
+        "max_turns": 10,
+        "retriever": "keyword",
+        "temperature": 0,
+        "pricing": null,
+        "systems": [
+          "baseline",
+          "agent",
+          "multi"
+        ],
+        "case_ids": [
+          "s4-001",
+          "s4-002",
+          "s4-003",
+          "s4-004",
+          "s4-005",
+          "s4-006",
+          "s4-007",
+          "s4-008",
+          "s4-009",
+          "s4-010",
+          "s4-011",
+          "s4-012"
+        ],
+        "repeats": 1,
+        "repeat_ids": [],
+        "facts_sha256": "44869d6654f5c4af9b381002e8c084af881c678b6a6e57f8f1cb10712064bfcb",
+        "cases_sha256": "0bf3a3f29380152991612bfa51690592978f53becdca59fba6cbc4b784967def",
+        "index_sha256": "47b7d83cf5cfc299ced4a9e0ea6dbb2feb4ff397fc7881bc51a4706ac11c26ca",
+        "code_sha256": {
+          "__init__.py": "dcc49f5ab992cbc7c16c584c446a60e7783a30033cb93963bbaabdb447a4356e",
+          "__main__.py": "db849e88f42ce86e13cf37c2d7f8a5538b1ed58dc820e83984c0b0c5bf125332",
+          "agent.py": "836bdffd0cd671d543d08442f96481dfc6e8b29ea57451bded7b12d30820c251",
+          "baseline.py": "b731c63a3215a5bb28740fa0a713dc07db0881a823bf3e8385bdec6c2091ef83",
+          "calculations.py": "65e6b95a8dc5955866b208344725141e3cb8cf306e6da8340e46fe663ddbf5af",
+          "embeddings.py": "c4ba5f4f42865be5ec11465a9b886d79eb5cc4cd948edb07d0187e2008e34311",
+          "evaluation.py": "6c31d1204cce834352bfa6baf4d8d6e9334fa8d5c2902bb2473c3a056c899307",
+          "facts.py": "cf118f6e8fce8980864f80bcd46d95e07616a783a0c082f2d5e0507a1089aedd",
+          "fault_eval.py": "592c66ab5398231be0ac42a77e9558a64c3d07095fc3bf1dd2d6ce2ac8dae9b3",
+          "faults.py": "ee521bdf4cf10c3acd5a9b2d10c8fba324b00986fc20d419c6040c97e8e2ad47",
+          "filings.py": "6ef1c7f2c26eb946e1ac67026ed6fea30d97817e5ae31d12d5a5ad6f625905b4",
+          "ingest.py": "1ce12b345cb3844c5462d7baa465d7c640eb98a3013921c6cc70a57028855f27",
+          "memo.py": "1189bcdf4023dfb304fec42e4adfed16da354864a59f9f8f64f0e4210a58d2c5",
+          "model.py": "81b8a4c93bf6acbb3c4a2844db425f99c7b7473dfdad475d283dd33306fcf749",
+          "ratios.py": "ce2d571629dd531fc50b39d062fdddbacf49ff6c6df9ad3effb09d96b4b54d33",
+          "retrieval.py": "dd71609fe26167dbef233f246cda4021b627e0108274d9e931dbf0b4985c9f1d",
+          "retrieval_eval.py": "25ee0675aea772d7d6b31fd24434aeb2cf985a0e3019398ef508f9e6b57b3b0b",
+          "sec.py": "135c4fb6900f245cfae525064be2024c935152cf043c7f83fdca5a147ff0c263",
+          "stats.py": "ab89df67fb2a7292104151e29fb2fdb67bcc57682aab70f0f35ec3a014dd7b47",
+          "tools.py": "f75bbc02030e73818b2cd4f6061719917d84ab1014d26fbb8f7b887cd4cf1cc8",
+          "trace_tools.py": "2ba0dda655dc653e98a3fa07c3d3fa14d4f48c36aaca9c5cdd7a3923feb06d1f",
+          "uploads.py": "ac13d5a5e484595ae4acedfda07988b51369190d5326bb3a0687a5c52f2ba24e",
+          "web.py": "cb0f48e80f0e6adc8310725c036eef75b5f13b9ac5277ceca77f733f6de13c59",
+          "workflow.py": "2d1c5e4266567e608977a07e8e8d271d4ec066d52bb99c0d429e5d2f43eed68f"
+        },
+        "measurement_boundary": "System run includes model/tool calls, retries and query embedding; excludes initial data loading and trace serialization. Caches may be warm. Orders alternate by case/repeat.",
+        "budget_note": "Same configured ceilings; baseline has a fixed two-model/two-tool pipeline. Agent may spend more within the ceilings."
+      },
+      "summary": {
+        "systems": {
+          "agent": {
+            "passed": 3,
+            "total": 4,
+            "accuracy": 0.75,
+            "wilson_95": [
+              0.3006360524426366,
+              0.9544139373553637
+            ],
+            "latency_mean_seconds": 22.73612428130582,
+            "latency_p95_seconds": 49.71528262505308,
+            "estimated_cost_usd": null,
+            "model_calls": 16,
+            "tool_calls": 15,
+            "execution_errors": 1,
+            "incomplete": 0
+          },
+          "baseline": {
+            "passed": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "wilson_95": [
+              0.5100999795960008,
+              1.0
+            ],
+            "latency_mean_seconds": 6.870717124984367,
+            "latency_p95_seconds": 22.128088083001785,
+            "estimated_cost_usd": null,
+            "model_calls": 8,
+            "tool_calls": 8,
+            "execution_errors": 0,
+            "incomplete": 0
+          },
+          "multi": {
+            "passed": 2,
+            "total": 4,
+            "accuracy": 0.5,
+            "wilson_95": [
+              0.15003570882017148,
+              0.8499642911798285
+            ],
+            "latency_mean_seconds": 23.537585353769828,
+            "latency_p95_seconds": 65.36123379098717,
+            "estimated_cost_usd": null,
+            "model_calls": 31,
+            "tool_calls": 33,
+            "execution_errors": 0,
+            "incomplete": 2
+          }
+        },
+        "primary_cases": 4,
+        "additional_runs": 0,
+        "failure_categories": {
+          "agent": {
+            "execution_error": 1
+          },
+          "baseline": {},
+          "multi": {
+            "execution_incomplete": 2
+          }
+        },
+        "agent_minus_baseline": {
+          "difference": -0.25,
+          "ci95": [
+            -0.75,
+            0.0
+          ],
+          "resamples": 1000,
+          "seed": 0,
+          "inconclusive": true,
+          "both": 3,
+          "only_a": 0,
+          "only_b": 1,
+          "neither": 0
+        },
+        "paired_comparisons": {
+          "agent_minus_baseline": {
+            "difference": -0.25,
+            "ci95": [
+              -0.75,
+              0.0
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 3,
+            "only_a": 0,
+            "only_b": 1,
+            "neither": 0
+          },
+          "agent_minus_multi": {
+            "difference": 0.25,
+            "ci95": [
+              -0.5,
+              1.0
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 1,
+            "only_a": 2,
+            "only_b": 1,
+            "neither": 0
+          },
+          "baseline_minus_multi": {
+            "difference": 0.5,
+            "ci95": [
+              0.0,
+              1.0
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 2,
+            "only_a": 2,
+            "only_b": 0,
+            "neither": 0
+          }
+        },
+        "repeated_cases": {},
+        "run_status": "interrupted",
+        "scheduled_runs": 36,
+        "completed_runs": 12,
+        "interruption_reason": "Stopped to repair an additional-citation handoff bug and address repeated API quota failures. Do not treat this partial batch as a full-system comparison."
+      },
+      "all_scheduled_runs_present": false,
+      "runs": [
+        {
+          "case_id": "s4-001",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 1.89427320798859,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2726,
+            "output_tokens": 166,
+            "total_tokens": 2892,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "647add2262e45d662272d5c14285f6d0c0d83fd4e8817b6a98d03819b454accb"
+        },
+        {
+          "case_id": "s4-001",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 49.71528262505308,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 12493,
+            "output_tokens": 228,
+            "total_tokens": 12721,
+            "usage_complete": false,
+            "model_calls": 4,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "4358ed9dc87f99550a6a7e031a46956448640026bea274c16e439ab609a94cea"
+        },
+        {
+          "case_id": "s4-001",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.121800165972672,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 6114,
+            "output_tokens": 279,
+            "total_tokens": 6393,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "70cdb0d48740a83080e778eee4559b7752f6c4c93ef05f3e5b003412f9b6c73e"
+        },
+        {
+          "case_id": "s4-002",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 3.36919762508478,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 12499,
+            "output_tokens": 221,
+            "total_tokens": 12720,
+            "usage_complete": true,
+            "model_calls": 4,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "f95f15de5d2a5d91a269187f8366f5cb8294479e4b560a6b202a0cb0d2bfece4"
+        },
+        {
+          "case_id": "s4-002",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 65.36123379098717,
+          "tool_calls": 10,
+          "usage": {
+            "input_tokens": 21849,
+            "output_tokens": 883,
+            "total_tokens": 22732,
+            "usage_complete": false,
+            "model_calls": 10,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "budget",
+          "trace_sha256": "9bdd6458a5d1c8b59f10363af5c7afed47b7b2a90ed266a5b5cb1119fabf35dc"
+        },
+        {
+          "case_id": "s4-002",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 1.7479087919928133,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2718,
+            "output_tokens": 166,
+            "total_tokens": 2884,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "8358d11ce1e754eb37d2d496475f0aee72c6352381d0ec39b218d61b7be1ea31"
+        },
+        {
+          "case_id": "s4-003",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 5.466559250024147,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 6896,
+            "output_tokens": 328,
+            "total_tokens": 7224,
+            "usage_complete": true,
+            "model_calls": 6,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "194afe0740d6a29cee00cf6b0b0e52b2c3816254c0ec2505e0c587e673675770"
+        },
+        {
+          "case_id": "s4-003",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 1.712598416954279,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2728,
+            "output_tokens": 167,
+            "total_tokens": 2895,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "e0c3b55fc27deeaf510d8f8688b057d5912eec618b4da90d34ab5308895204ec"
+        },
+        {
+          "case_id": "s4-003",
+          "system": "agent",
+          "repeat": 0,
+          "status": "error",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_error"
+            ]
+          },
+          "latency_seconds": 33.58243766706437,
+          "tool_calls": 3,
+          "usage": {
+            "input_tokens": 8521,
+            "output_tokens": 119,
+            "total_tokens": 8640,
+            "usage_complete": false,
+            "model_calls": 4,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "7ceb6811065828411e5e90e89337dff2b5278bed5b9a8fdc4071a5192fde38d9"
+        },
+        {
+          "case_id": "s4-004",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 22.128088083001785,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2714,
+            "output_tokens": 144,
+            "total_tokens": 2858,
+            "usage_complete": false,
+            "model_calls": 2,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "873b5f8d40f8c92464b00cd604d8b5ffa37792e4743ab62e60006d07b456b3ed"
+        },
+        {
+          "case_id": "s4-004",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.277579208021052,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 12481,
+            "output_tokens": 222,
+            "total_tokens": 12703,
+            "usage_complete": true,
+            "model_calls": 4,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "624f92f33b0f5434db10844b5e319fd4e3d02b55af25b7fb8e1423a30ae28dd4"
+        },
+        {
+          "case_id": "s4-004",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 19.20074820809532,
+          "tool_calls": 11,
+          "usage": {
+            "input_tokens": 14262,
+            "output_tokens": 732,
+            "total_tokens": 14994,
+            "usage_complete": false,
+            "model_calls": 10,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "budget",
+          "trace_sha256": "42ee51eaa82317555ab1357598bc92938e401d0d267fd498ff8afc2b66460b1b"
+        }
+      ]
+    },
+    {
+      "run_id": "20261127T185821925502Z",
+      "configuration": {
+        "git_commit": "ead0f6e88aee17ad8d38683f1f192a8ea9e44191",
+        "model": "gemini-3.5-flash-lite",
+        "max_calls": 12,
+        "max_turns": 10,
+        "retriever": "keyword",
+        "temperature": 0,
+        "pricing": null,
+        "request_interval_seconds": 2.1,
+        "systems": [
+          "baseline",
+          "agent",
+          "multi"
+        ],
+        "case_ids": [
+          "s4-001",
+          "s4-002",
+          "s4-003",
+          "s4-004",
+          "s4-005",
+          "s4-006",
+          "s4-007",
+          "s4-008",
+          "s4-009",
+          "s4-010",
+          "s4-011",
+          "s4-012"
+        ],
+        "repeats": 1,
+        "repeat_ids": [],
+        "facts_sha256": "44869d6654f5c4af9b381002e8c084af881c678b6a6e57f8f1cb10712064bfcb",
+        "cases_sha256": "0bf3a3f29380152991612bfa51690592978f53becdca59fba6cbc4b784967def",
+        "index_sha256": "47b7d83cf5cfc299ced4a9e0ea6dbb2feb4ff397fc7881bc51a4706ac11c26ca",
+        "code_sha256": {
+          "__init__.py": "dcc49f5ab992cbc7c16c584c446a60e7783a30033cb93963bbaabdb447a4356e",
+          "__main__.py": "db849e88f42ce86e13cf37c2d7f8a5538b1ed58dc820e83984c0b0c5bf125332",
+          "agent.py": "411622c3d12a2e7cabbf2b2a19eb6ec9d456884f21cc592f18eb092da84172ea",
+          "baseline.py": "b731c63a3215a5bb28740fa0a713dc07db0881a823bf3e8385bdec6c2091ef83",
+          "calculations.py": "65e6b95a8dc5955866b208344725141e3cb8cf306e6da8340e46fe663ddbf5af",
+          "embeddings.py": "c4ba5f4f42865be5ec11465a9b886d79eb5cc4cd948edb07d0187e2008e34311",
+          "evaluation.py": "8b0142a5a4f1a3cf4fae24e4a4236d6c1bad4250b1228fe3721e9bf000a8581f",
+          "facts.py": "cf118f6e8fce8980864f80bcd46d95e07616a783a0c082f2d5e0507a1089aedd",
+          "fault_eval.py": "c3a699ab40d8c434b7eb3e7c821bbfc3bc17aeab5c937c0a1f7e839c473fb553",
+          "faults.py": "ee521bdf4cf10c3acd5a9b2d10c8fba324b00986fc20d419c6040c97e8e2ad47",
+          "filings.py": "6ef1c7f2c26eb946e1ac67026ed6fea30d97817e5ae31d12d5a5ad6f625905b4",
+          "ingest.py": "1ce12b345cb3844c5462d7baa465d7c640eb98a3013921c6cc70a57028855f27",
+          "memo.py": "ca1004e596a76136b9136cb880e217413f9033d16d314a9224128b6b06287cdc",
+          "model.py": "02f1c09cd7af3945cf2765ea88dd05e4dd91c7ade4b6ad349e577eed705465aa",
+          "ratios.py": "ce2d571629dd531fc50b39d062fdddbacf49ff6c6df9ad3effb09d96b4b54d33",
+          "retrieval.py": "dd71609fe26167dbef233f246cda4021b627e0108274d9e931dbf0b4985c9f1d",
+          "retrieval_eval.py": "25ee0675aea772d7d6b31fd24434aeb2cf985a0e3019398ef508f9e6b57b3b0b",
+          "sec.py": "135c4fb6900f245cfae525064be2024c935152cf043c7f83fdca5a147ff0c263",
+          "stats.py": "ab89df67fb2a7292104151e29fb2fdb67bcc57682aab70f0f35ec3a014dd7b47",
+          "tools.py": "f75bbc02030e73818b2cd4f6061719917d84ab1014d26fbb8f7b887cd4cf1cc8",
+          "trace_tools.py": "2ba0dda655dc653e98a3fa07c3d3fa14d4f48c36aaca9c5cdd7a3923feb06d1f",
+          "uploads.py": "ac13d5a5e484595ae4acedfda07988b51369190d5326bb3a0687a5c52f2ba24e",
+          "web.py": "cb0f48e80f0e6adc8310725c036eef75b5f13b9ac5277ceca77f733f6de13c59",
+          "workflow.py": "2d1c5e4266567e608977a07e8e8d271d4ec066d52bb99c0d429e5d2f43eed68f"
+        },
+        "measurement_boundary": "System run includes model/tool calls, retries and query embedding; excludes initial data loading and trace serialization. Caches may be warm. Orders alternate by case/repeat.",
+        "budget_note": "Same configured ceilings; baseline has a fixed two-model/two-tool pipeline. Agent may spend more within the ceilings."
+      },
+      "summary": {
+        "systems": {
+          "agent": {
+            "passed": 8,
+            "total": 12,
+            "accuracy": 0.6666666666666666,
+            "wilson_95": [
+              0.3906175873976139,
+              0.8618821601026385
+            ],
+            "latency_mean_seconds": 18.84844209025808,
+            "latency_p95_seconds": 41.60148991609458,
+            "estimated_cost_usd": null,
+            "model_calls": 68,
+            "tool_calls": 67,
+            "execution_errors": 1,
+            "incomplete": 2
+          },
+          "baseline": {
+            "passed": 10,
+            "total": 12,
+            "accuracy": 0.8333333333333334,
+            "wilson_95": [
+              0.5519636426153274,
+              0.9530358523851776
+            ],
+            "latency_mean_seconds": 6.556905517325504,
+            "latency_p95_seconds": 15.398718292010017,
+            "estimated_cost_usd": null,
+            "model_calls": 23,
+            "tool_calls": 22,
+            "execution_errors": 1,
+            "incomplete": 0
+          },
+          "multi": {
+            "passed": 7,
+            "total": 12,
+            "accuracy": 0.5833333333333334,
+            "wilson_95": [
+              0.3195073356553728,
+              0.8067425380947535
+            ],
+            "latency_mean_seconds": 19.08544104525936,
+            "latency_p95_seconds": 32.811251042061485,
+            "estimated_cost_usd": null,
+            "model_calls": 72,
+            "tool_calls": 79,
+            "execution_errors": 0,
+            "incomplete": 4
+          }
+        },
+        "primary_cases": 12,
+        "additional_runs": 0,
+        "failure_categories": {
+          "agent": {
+            "verdict": 1,
+            "verified_value": 1,
+            "unit": 1,
+            "execution_incomplete": 2,
+            "execution_error": 1
+          },
+          "baseline": {
+            "company": 1,
+            "fiscal_year": 1,
+            "execution_error": 1
+          },
+          "multi": {
+            "execution_incomplete": 4,
+            "company": 1,
+            "fiscal_year": 1
+          }
+        },
+        "agent_minus_baseline": {
+          "difference": -0.16666666666666666,
+          "ci95": [
+            -0.5833333333333334,
+            0.25
+          ],
+          "resamples": 1000,
+          "seed": 0,
+          "inconclusive": true,
+          "both": 6,
+          "only_a": 2,
+          "only_b": 4,
+          "neither": 0
+        },
+        "paired_comparisons": {
+          "agent_minus_baseline": {
+            "difference": -0.16666666666666666,
+            "ci95": [
+              -0.5833333333333334,
+              0.25
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 6,
+            "only_a": 2,
+            "only_b": 4,
+            "neither": 0
+          },
+          "agent_minus_multi": {
+            "difference": 0.08333333333333333,
+            "ci95": [
+              -0.4166666666666667,
+              0.5833333333333334
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 3,
+            "only_a": 5,
+            "only_b": 4,
+            "neither": 0
+          },
+          "baseline_minus_multi": {
+            "difference": 0.25,
+            "ci95": [
+              -0.08333333333333333,
+              0.5833333333333334
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 6,
+            "only_a": 4,
+            "only_b": 1,
+            "neither": 1
+          }
+        },
+        "repeated_cases": {},
+        "run_status": "complete",
+        "scheduled_runs": 36,
+        "completed_runs": 36
+      },
+      "all_scheduled_runs_present": true,
+      "runs": [
+        {
+          "case_id": "s4-001",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 3.1724962500156835,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2726,
+            "output_tokens": 162,
+            "total_tokens": 2888,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "4efe35895f99326658d8c5ed49214edd2734fb26196fdc11f4dc4946db84187f"
+        },
+        {
+          "case_id": "s4-001",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 8.33161749993451,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 12493,
+            "output_tokens": 220,
+            "total_tokens": 12713,
+            "usage_complete": true,
+            "model_calls": 4,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "fb245e5b03ba4e5707a19934a83b2c3435d97f290331963b00845d30768281ab"
+        },
+        {
+          "case_id": "s4-001",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 30.862110542017035,
+          "tool_calls": 12,
+          "usage": {
+            "input_tokens": 31453,
+            "output_tokens": 882,
+            "total_tokens": 32335,
+            "usage_complete": false,
+            "model_calls": 10,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "budget",
+          "trace_sha256": "e066519e4a27737395f4bd1c5117a7bde4027a36bea4ac21f7f352b39d7bd0d0"
+        },
+        {
+          "case_id": "s4-002",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 8.54475816595368,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 12481,
+            "output_tokens": 247,
+            "total_tokens": 12728,
+            "usage_complete": true,
+            "model_calls": 4,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "e5625d831e4fd23f7dc5efdcb0a350993a3c6cb541dcfa2cec266323b0ac9492"
+        },
+        {
+          "case_id": "s4-002",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 12.458349958993495,
+          "tool_calls": 9,
+          "usage": {
+            "input_tokens": 18599,
+            "output_tokens": 553,
+            "total_tokens": 19152,
+            "usage_complete": true,
+            "model_calls": 6,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "a05cd6b7f139076c42c2ba5c5d326929a127b0a61478961387c207a0a68a9fae"
+        },
+        {
+          "case_id": "s4-002",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.096882084035315,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2718,
+            "output_tokens": 184,
+            "total_tokens": 2902,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "2c382a735bd1f943d5345eaed96bed1e93a1cfc0082152c6217866bb16e2b125"
+        },
+        {
+          "case_id": "s4-003",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 20.1573917909991,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 7045,
+            "output_tokens": 294,
+            "total_tokens": 7339,
+            "usage_complete": false,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "cd8b0c44dc5917996ef6b934124c1ceba4f4c47689d955d9af92ad85fb26d082"
+        },
+        {
+          "case_id": "s4-003",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 15.398718292010017,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2728,
+            "output_tokens": 170,
+            "total_tokens": 2898,
+            "usage_complete": false,
+            "model_calls": 2,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "03980c5509db3a902dcf3793e9baa62671773a70fb95de8633a1b5bf015bf84b"
+        },
+        {
+          "case_id": "s4-003",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 8.041895167087205,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 12495,
+            "output_tokens": 216,
+            "total_tokens": 12711,
+            "usage_complete": true,
+            "model_calls": 4,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "45a0a13b0517334b8f52b2c3afa406dee8ba99140bfd7e8652a3374b5d988dc7"
+        },
+        {
+          "case_id": "s4-004",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.150852959020995,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2714,
+            "output_tokens": 145,
+            "total_tokens": 2859,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "cb6299c0d2ae24db5444fa0cf20e2ea5e27745ee7ae9f8cea103c563310e0715"
+        },
+        {
+          "case_id": "s4-004",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 8.523083625012077,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 12481,
+            "output_tokens": 229,
+            "total_tokens": 12710,
+            "usage_complete": true,
+            "model_calls": 4,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "226d56fdf627ae79891a22c19bd2ca42535718fdf30e27c207a96afd598b0dbe"
+        },
+        {
+          "case_id": "s4-004",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 23.891560000018217,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 18574,
+            "output_tokens": 573,
+            "total_tokens": 19147,
+            "usage_complete": false,
+            "model_calls": 7,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "fc994afc55bddd63a6ab5ba406ddea503365fe2830eb5e0de1cd2da22464701e"
+        },
+        {
+          "case_id": "s4-005",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 19.214067708002403,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 12552,
+            "output_tokens": 241,
+            "total_tokens": 12793,
+            "usage_complete": false,
+            "model_calls": 4,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "188d3e9930b7a5666447a5d285053e8be47789bbc74d781baea5b5cbd6c6ab95"
+        },
+        {
+          "case_id": "s4-005",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 16.703578333952464,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 13801,
+            "output_tokens": 379,
+            "total_tokens": 14180,
+            "usage_complete": true,
+            "model_calls": 8,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "5bf0bb52ce91fce4c1d3c391bf4f9d56a058d42d446e3f67c4dafdf2c7264820"
+        },
+        {
+          "case_id": "s4-005",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.415800874936394,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2753,
+            "output_tokens": 182,
+            "total_tokens": 2935,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "a10806a7a6477043640448c1ad35aa1c91cefe10b4447cdc17e3c05f0801fc77"
+        },
+        {
+          "case_id": "s4-006",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 20.326563750044443,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 7246,
+            "output_tokens": 382,
+            "total_tokens": 7628,
+            "usage_complete": false,
+            "model_calls": 5,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "f54e3a0adabc1168a75cbf37406a070451865ed525a48475f27639f4cdb5e908"
+        },
+        {
+          "case_id": "s4-006",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 14.605786332977004,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 3239,
+            "output_tokens": 182,
+            "total_tokens": 3421,
+            "usage_complete": false,
+            "model_calls": 2,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "eb0d4196e52c03e996b97d7e0de68c1c65c40b9965a822f1bfaffd65f5f3cf41"
+        },
+        {
+          "case_id": "s4-006",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "verdict",
+              "verified_value",
+              "unit"
+            ]
+          },
+          "latency_seconds": 16.824686957988888,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 41745,
+            "output_tokens": 954,
+            "total_tokens": 42699,
+            "usage_complete": true,
+            "model_calls": 8,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "faca45951110eb69bd1a63cc97526fd5f3245ca6a66da2e0191e9ef336bf3125"
+        },
+        {
+          "case_id": "s4-007",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.027204415993765,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 2973,
+            "output_tokens": 194,
+            "total_tokens": 3167,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "ec334e44d8ca87013e1306b67282760858be7ad02fbbddd35f9ae0b3fddc926e"
+        },
+        {
+          "case_id": "s4-007",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 6.298185124993324,
+          "tool_calls": 3,
+          "usage": {
+            "input_tokens": 8922,
+            "output_tokens": 220,
+            "total_tokens": 9142,
+            "usage_complete": true,
+            "model_calls": 3,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "dd603b485980432c98943d66662e9b1e4e30450179c8a101ef6da88e7413fc35"
+        },
+        {
+          "case_id": "s4-007",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 17.83476520795375,
+          "tool_calls": 3,
+          "usage": {
+            "input_tokens": 5035,
+            "output_tokens": 139,
+            "total_tokens": 5174,
+            "usage_complete": false,
+            "model_calls": 4,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "2819ec5611f8fb89a87787cdb770b0648e534af7067e0270f68e92129168b9dd"
+        },
+        {
+          "case_id": "s4-008",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 21.268930541933514,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 13979,
+            "output_tokens": 275,
+            "total_tokens": 14254,
+            "usage_complete": false,
+            "model_calls": 5,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "8207c7db1f432566208f15c0bc64877d90a2ec9291b47d60ae1c1ac36f7ce35a"
+        },
+        {
+          "case_id": "s4-008",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "company",
+              "fiscal_year"
+            ]
+          },
+          "latency_seconds": 10.422567583969794,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 8717,
+            "output_tokens": 274,
+            "total_tokens": 8991,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "9b26e20aaa44f058136274557749f4f6e771a81491bfab398f6c95c1685ede94"
+        },
+        {
+          "case_id": "s4-008",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "company",
+              "fiscal_year"
+            ]
+          },
+          "latency_seconds": 4.308156082988717,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 4661,
+            "output_tokens": 110,
+            "total_tokens": 4771,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "a719d2157b33e3cc57152d701af65875c9252e13c1e43b2b1041c91b9bc75035"
+        },
+        {
+          "case_id": "s4-009",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 32.811251042061485,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 13766,
+            "output_tokens": 392,
+            "total_tokens": 14158,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "1cab680125803f068f2b8cb43ca4313d3686e26b2f5d78399292fe85090da2a7"
+        },
+        {
+          "case_id": "s4-009",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.2654339579166844,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 4999,
+            "output_tokens": 130,
+            "total_tokens": 5129,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "86668ab4959895e9cfdee272e379aa5641ebfb0f9b51d520a4f2ede6607919e3"
+        },
+        {
+          "case_id": "s4-009",
+          "system": "agent",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 21.148419167031534,
+          "tool_calls": 10,
+          "usage": {
+            "input_tokens": 59529,
+            "output_tokens": 677,
+            "total_tokens": 60206,
+            "usage_complete": true,
+            "model_calls": 10,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "budget",
+          "trace_sha256": "ae6ec324ced90e3699931b55522474bf54621a031c5d28244d2084c25c3e6fe0"
+        },
+        {
+          "case_id": "s4-010",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "error",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_error"
+            ]
+          },
+          "latency_seconds": 11.223907207953744,
+          "tool_calls": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "usage_complete": false,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "749167dc45fe421dbcd080b7de721e8c703d5c87d6cafeca3fa74f7524327fc2"
+        },
+        {
+          "case_id": "s4-010",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 29.6100912920665,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 16630,
+            "output_tokens": 262,
+            "total_tokens": 16892,
+            "usage_complete": false,
+            "model_calls": 4,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "6cba3a54a3ea1177bd76cd58744cff5f77c65d4e9fd429df0fd64f86e568b98d"
+        },
+        {
+          "case_id": "s4-010",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 10.279718500096351,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 8695,
+            "output_tokens": 295,
+            "total_tokens": 8990,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "9b1a0cc164834eee7cc4b95f85adfcbb6bdbeb12edf423636d613f9589697a38"
+        },
+        {
+          "case_id": "s4-011",
+          "system": "agent",
+          "repeat": 0,
+          "status": "error",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_error"
+            ]
+          },
+          "latency_seconds": 36.774079916998744,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 40738,
+            "output_tokens": 733,
+            "total_tokens": 41471,
+            "usage_complete": false,
+            "model_calls": 8,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "1cc13d9efcba27462852f099a81bde63c22cf3b03bf5065d1ca7ef6337c4230f"
+        },
+        {
+          "case_id": "s4-011",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 23.16058470797725,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 18403,
+            "output_tokens": 318,
+            "total_tokens": 18721,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "7ca4b78d6843a5ab9fb433aa01f9c5bc9d7b19c4b30036e70d70ed41ace84032"
+        },
+        {
+          "case_id": "s4-011",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.628670125035569,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 5560,
+            "output_tokens": 163,
+            "total_tokens": 5723,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "e445eedcccf739eae6e97f6ee1b6902846e57d374a01335d8a408a45c3543f7e"
+        },
+        {
+          "case_id": "s4-012",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 10.116851125028916,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 9987,
+            "output_tokens": 397,
+            "total_tokens": 10384,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "ffd059274ef9a1127a6d8bc6748cd931b1c5739785a0580339382becbc6e2d6c"
+        },
+        {
+          "case_id": "s4-012",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 4.388957625022158,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 5478,
+            "output_tokens": 142,
+            "total_tokens": 5620,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "4d76dc0bce7c6194e0a0858ec29d4131d8369410d4850788026c89d87c5d3c22"
+        },
+        {
+          "case_id": "s4-012",
+          "system": "agent",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 41.60148991609458,
+          "tool_calls": 10,
+          "usage": {
+            "input_tokens": 66113,
+            "output_tokens": 953,
+            "total_tokens": 67066,
+            "usage_complete": false,
+            "model_calls": 10,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "budget",
+          "trace_sha256": "a32c34a4f03764cf810b8cf933effc99eae5d5866eb7f5e8249070392620b1ed"
+        }
+      ]
+    },
+    {
+      "run_id": "20261127T191055303190Z",
+      "configuration": {
+        "git_commit": "ea92234bef8800c3e4efe4f4612c41576ee5f60b",
+        "model": "gemini-3.5-flash-lite",
+        "max_calls": 12,
+        "max_turns": 10,
+        "retriever": "keyword",
+        "temperature": 0,
+        "pricing": null,
+        "request_interval_seconds": 2.1,
+        "systems": [
+          "baseline",
+          "agent",
+          "multi"
+        ],
+        "case_ids": [
+          "s4-006",
+          "s4-008"
+        ],
+        "repeats": 1,
+        "repeat_ids": [],
+        "facts_sha256": "44869d6654f5c4af9b381002e8c084af881c678b6a6e57f8f1cb10712064bfcb",
+        "cases_sha256": "0bf3a3f29380152991612bfa51690592978f53becdca59fba6cbc4b784967def",
+        "index_sha256": "47b7d83cf5cfc299ced4a9e0ea6dbb2feb4ff397fc7881bc51a4706ac11c26ca",
+        "code_sha256": {
+          "__init__.py": "dcc49f5ab992cbc7c16c584c446a60e7783a30033cb93963bbaabdb447a4356e",
+          "__main__.py": "bfbdd9f3fd87cdfe52d90120f0f0551bd4c5dfecb94e3377f9041d172c819944",
+          "agent.py": "4f634c2e15d2ec382eaca556907c70983fddf78ab83894d583c4a3b29a66c97d",
+          "baseline.py": "b731c63a3215a5bb28740fa0a713dc07db0881a823bf3e8385bdec6c2091ef83",
+          "calculations.py": "65e6b95a8dc5955866b208344725141e3cb8cf306e6da8340e46fe663ddbf5af",
+          "embeddings.py": "c4ba5f4f42865be5ec11465a9b886d79eb5cc4cd948edb07d0187e2008e34311",
+          "evaluation.py": "dcb4c612645cab01f50622b4e27891dd672528b19264b90ec66d96028b69b9a3",
+          "facts.py": "cf118f6e8fce8980864f80bcd46d95e07616a783a0c082f2d5e0507a1089aedd",
+          "fault_eval.py": "c3a699ab40d8c434b7eb3e7c821bbfc3bc17aeab5c937c0a1f7e839c473fb553",
+          "faults.py": "a8aaed5d9e88f764850e07e6f5c2091419480ba1fe02c0077efa196232cab9cf",
+          "filings.py": "6ef1c7f2c26eb946e1ac67026ed6fea30d97817e5ae31d12d5a5ad6f625905b4",
+          "freeze.py": "c651c1f559faf6169bdb536194baafe08cb42653238578343e6e5ea76730a1f5",
+          "ingest.py": "1ce12b345cb3844c5462d7baa465d7c640eb98a3013921c6cc70a57028855f27",
+          "memo.py": "ca1004e596a76136b9136cb880e217413f9033d16d314a9224128b6b06287cdc",
+          "model.py": "02f1c09cd7af3945cf2765ea88dd05e4dd91c7ade4b6ad349e577eed705465aa",
+          "ratios.py": "ce2d571629dd531fc50b39d062fdddbacf49ff6c6df9ad3effb09d96b4b54d33",
+          "retrieval.py": "dd71609fe26167dbef233f246cda4021b627e0108274d9e931dbf0b4985c9f1d",
+          "retrieval_eval.py": "25ee0675aea772d7d6b31fd24434aeb2cf985a0e3019398ef508f9e6b57b3b0b",
+          "sec.py": "135c4fb6900f245cfae525064be2024c935152cf043c7f83fdca5a147ff0c263",
+          "stats.py": "ab89df67fb2a7292104151e29fb2fdb67bcc57682aab70f0f35ec3a014dd7b47",
+          "tools.py": "f75bbc02030e73818b2cd4f6061719917d84ab1014d26fbb8f7b887cd4cf1cc8",
+          "trace_tools.py": "2ba0dda655dc653e98a3fa07c3d3fa14d4f48c36aaca9c5cdd7a3923feb06d1f",
+          "uploads.py": "ac13d5a5e484595ae4acedfda07988b51369190d5326bb3a0687a5c52f2ba24e",
+          "web.py": "cb0f48e80f0e6adc8310725c036eef75b5f13b9ac5277ceca77f733f6de13c59",
+          "workflow.py": "bc186681cf43adcb0901bb82a12438ba3a5b89d8b526e1ece2aae90fdce9835c"
+        },
+        "measurement_boundary": "System run includes model/tool calls, retries and query embedding; excludes initial data loading and trace serialization. Caches may be warm. Orders alternate by case/repeat.",
+        "budget_note": "Same configured ceilings; baseline has a fixed two-model/two-tool pipeline. Agent may spend more within the ceilings."
+      },
+      "summary": {
+        "systems": {
+          "agent": {
+            "passed": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "wilson_95": [
+              0.34237195288961925,
+              1.0
+            ],
+            "latency_mean_seconds": 10.632195250480436,
+            "latency_p95_seconds": 10.855859291972592,
+            "estimated_cost_usd": null,
+            "model_calls": 10,
+            "tool_calls": 10,
+            "execution_errors": 0,
+            "incomplete": 0
+          },
+          "baseline": {
+            "passed": 1,
+            "total": 2,
+            "accuracy": 0.5,
+            "wilson_95": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "latency_mean_seconds": 22.42888260394102,
+            "latency_p95_seconds": 41.53830549994018,
+            "estimated_cost_usd": null,
+            "model_calls": 3,
+            "tool_calls": 2,
+            "execution_errors": 1,
+            "incomplete": 0
+          },
+          "multi": {
+            "passed": 1,
+            "total": 2,
+            "accuracy": 0.5,
+            "wilson_95": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "latency_mean_seconds": 28.14478270849213,
+            "latency_p95_seconds": 46.30094141699374,
+            "estimated_cost_usd": null,
+            "model_calls": 7,
+            "tool_calls": 9,
+            "execution_errors": 0,
+            "incomplete": 1
+          }
+        },
+        "primary_cases": 2,
+        "additional_runs": 0,
+        "failure_categories": {
+          "agent": {},
+          "baseline": {
+            "execution_error": 1
+          },
+          "multi": {
+            "execution_incomplete": 1
+          }
+        },
+        "agent_minus_baseline": {
+          "difference": 0.5,
+          "ci95": [
+            0.0,
+            1.0
+          ],
+          "resamples": 1000,
+          "seed": 0,
+          "inconclusive": true,
+          "both": 1,
+          "only_a": 1,
+          "only_b": 0,
+          "neither": 0
+        },
+        "paired_comparisons": {
+          "agent_minus_baseline": {
+            "difference": 0.5,
+            "ci95": [
+              0.0,
+              1.0
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 1,
+            "only_a": 1,
+            "only_b": 0,
+            "neither": 0
+          },
+          "agent_minus_multi": {
+            "difference": 0.5,
+            "ci95": [
+              0.0,
+              1.0
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 1,
+            "only_a": 1,
+            "only_b": 0,
+            "neither": 0
+          },
+          "baseline_minus_multi": {
+            "difference": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 1,
+            "only_a": 0,
+            "only_b": 0,
+            "neither": 1
+          }
+        },
+        "repeated_cases": {},
+        "run_status": "complete",
+        "scheduled_runs": 6,
+        "completed_runs": 6
+      },
+      "all_scheduled_runs_present": true,
+      "runs": [
+        {
+          "case_id": "s4-006",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 3.31945970794186,
+          "tool_calls": 2,
+          "usage": {
+            "input_tokens": 3239,
+            "output_tokens": 193,
+            "total_tokens": 3432,
+            "usage_complete": true,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "bf5bc7f590bf075016feaa454ca41d779100364724edc1f94a56ec119883c048"
+        },
+        {
+          "case_id": "s4-006",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 10.408531208988279,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 17776,
+            "output_tokens": 630,
+            "total_tokens": 18406,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "49405c955233427b651ab48b7170478974fce63d27401306d363422aeaaa003a"
+        },
+        {
+          "case_id": "s4-006",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 9.988623999990523,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 7461,
+            "output_tokens": 385,
+            "total_tokens": 7846,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "aecc9d981381f940bcef4110fc708601791f7d7fdcf9616cd7292af71a4ade02"
+        },
+        {
+          "case_id": "s4-008",
+          "system": "agent",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 10.855859291972592,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 14129,
+            "output_tokens": 250,
+            "total_tokens": 14379,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "2ce88eda024cd97ac77e415377ace128619cc48f4b95e05ad2e23d3242c9e0de"
+        },
+        {
+          "case_id": "s4-008",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 46.30094141699374,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 145,
+            "output_tokens": 82,
+            "total_tokens": 227,
+            "usage_complete": false,
+            "model_calls": 2,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "other",
+          "trace_sha256": "ef2d1173c211fd6741f274b6f2f079436026ff2fb2aebf29c6c86105cfd00a18"
+        },
+        {
+          "case_id": "s4-008",
+          "system": "baseline",
+          "repeat": 0,
+          "status": "error",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_error"
+            ]
+          },
+          "latency_seconds": 41.53830549994018,
+          "tool_calls": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "usage_complete": false,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "other",
+          "trace_sha256": "23c548789c9335b27cd0943ccd2cfdaf401ef24ad206cac1a830dcaad7cd456b"
+        }
+      ]
+    },
+    {
+      "run_id": "20261127T191258402996Z",
+      "configuration": {
+        "git_commit": "ea92234bef8800c3e4efe4f4612c41576ee5f60b",
+        "model": "gemini-3.5-flash-lite",
+        "max_calls": 12,
+        "max_turns": 10,
+        "retriever": "keyword",
+        "request_interval_seconds": 2.1,
+        "experiment": "planning_plus_recovery_vs_disabled",
+        "repeats": 1,
+        "repeat_ids": [],
+        "facts_sha256": "44869d6654f5c4af9b381002e8c084af881c678b6a6e57f8f1cb10712064bfcb",
+        "cases_sha256": "3750b408579cf367d1c2606e475ffc18fa5a9a37c0094cd923fe8dae1731ec52",
+        "index_sha256": "47b7d83cf5cfc299ced4a9e0ea6dbb2feb4ff397fc7881bc51a4706ac11c26ca",
+        "code_sha256": {
+          "__init__.py": "dcc49f5ab992cbc7c16c584c446a60e7783a30033cb93963bbaabdb447a4356e",
+          "__main__.py": "bfbdd9f3fd87cdfe52d90120f0f0551bd4c5dfecb94e3377f9041d172c819944",
+          "agent.py": "4f634c2e15d2ec382eaca556907c70983fddf78ab83894d583c4a3b29a66c97d",
+          "baseline.py": "b731c63a3215a5bb28740fa0a713dc07db0881a823bf3e8385bdec6c2091ef83",
+          "calculations.py": "65e6b95a8dc5955866b208344725141e3cb8cf306e6da8340e46fe663ddbf5af",
+          "embeddings.py": "c4ba5f4f42865be5ec11465a9b886d79eb5cc4cd948edb07d0187e2008e34311",
+          "evaluation.py": "dcb4c612645cab01f50622b4e27891dd672528b19264b90ec66d96028b69b9a3",
+          "facts.py": "cf118f6e8fce8980864f80bcd46d95e07616a783a0c082f2d5e0507a1089aedd",
+          "fault_eval.py": "c3a699ab40d8c434b7eb3e7c821bbfc3bc17aeab5c937c0a1f7e839c473fb553",
+          "faults.py": "a8aaed5d9e88f764850e07e6f5c2091419480ba1fe02c0077efa196232cab9cf",
+          "filings.py": "6ef1c7f2c26eb946e1ac67026ed6fea30d97817e5ae31d12d5a5ad6f625905b4",
+          "freeze.py": "c651c1f559faf6169bdb536194baafe08cb42653238578343e6e5ea76730a1f5",
+          "ingest.py": "1ce12b345cb3844c5462d7baa465d7c640eb98a3013921c6cc70a57028855f27",
+          "memo.py": "ca1004e596a76136b9136cb880e217413f9033d16d314a9224128b6b06287cdc",
+          "model.py": "02f1c09cd7af3945cf2765ea88dd05e4dd91c7ade4b6ad349e577eed705465aa",
+          "ratios.py": "ce2d571629dd531fc50b39d062fdddbacf49ff6c6df9ad3effb09d96b4b54d33",
+          "retrieval.py": "dd71609fe26167dbef233f246cda4021b627e0108274d9e931dbf0b4985c9f1d",
+          "retrieval_eval.py": "25ee0675aea772d7d6b31fd24434aeb2cf985a0e3019398ef508f9e6b57b3b0b",
+          "sec.py": "135c4fb6900f245cfae525064be2024c935152cf043c7f83fdca5a147ff0c263",
+          "stats.py": "ab89df67fb2a7292104151e29fb2fdb67bcc57682aab70f0f35ec3a014dd7b47",
+          "tools.py": "f75bbc02030e73818b2cd4f6061719917d84ab1014d26fbb8f7b887cd4cf1cc8",
+          "trace_tools.py": "2ba0dda655dc653e98a3fa07c3d3fa14d4f48c36aaca9c5cdd7a3923feb06d1f",
+          "uploads.py": "ac13d5a5e484595ae4acedfda07988b51369190d5326bb3a0687a5c52f2ba24e",
+          "web.py": "cb0f48e80f0e6adc8310725c036eef75b5f13b9ac5277ceca77f733f6de13c59",
+          "workflow.py": "bc186681cf43adcb0901bb82a12438ba3a5b89d8b526e1ece2aae90fdce9835c"
+        },
+        "measurement_boundary": "System run includes model/tool calls, retries and query embedding; excludes initial data loading and trace serialization. Caches may be warm. Orders alternate by case/repeat.",
+        "budget_note": "Same configured ceilings; baseline has a fixed two-model/two-tool pipeline. Agent may spend more within the ceilings."
+      },
+      "summary": {
+        "systems": {
+          "no_explicit_plan": {
+            "passed": 0,
+            "total": 15,
+            "accuracy": 0.0,
+            "wilson_95": [
+              0.0,
+              0.20388926630434784
+            ],
+            "latency_mean_seconds": 4.347213777814371,
+            "latency_p95_seconds": 12.43502208404243,
+            "estimated_cost_usd": null,
+            "model_calls": 15,
+            "tool_calls": 13,
+            "execution_errors": 0,
+            "incomplete": 15,
+            "fault_injected": 13,
+            "fault_recovered": 0,
+            "not_injected": 2
+          },
+          "planned_recovery": {
+            "passed": 11,
+            "total": 15,
+            "accuracy": 0.7333333333333333,
+            "wilson_95": [
+              0.4804911034231324,
+              0.8910272389681718
+            ],
+            "latency_mean_seconds": 23.413952524866907,
+            "latency_p95_seconds": 49.39106524991803,
+            "estimated_cost_usd": null,
+            "model_calls": 106,
+            "tool_calls": 117,
+            "execution_errors": 0,
+            "incomplete": 4,
+            "fault_injected": 14,
+            "fault_recovered": 11,
+            "not_injected": 1
+          }
+        },
+        "primary_cases": 15,
+        "additional_runs": 0,
+        "failure_categories": {
+          "no_explicit_plan": {
+            "execution_incomplete": 15
+          },
+          "planned_recovery": {
+            "execution_incomplete": 4
+          }
+        },
+        "agent_minus_baseline": null,
+        "paired_comparisons": {
+          "no_explicit_plan_minus_planned_recovery": {
+            "difference": -0.7333333333333333,
+            "ci95": [
+              -0.9333333333333333,
+              -0.4666666666666667
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": false,
+            "both": 0,
+            "only_a": 0,
+            "only_b": 11,
+            "neither": 4
+          }
+        },
+        "repeated_cases": {},
+        "run_status": "complete",
+        "scheduled_runs": 30,
+        "completed_runs": 30
+      },
+      "all_scheduled_runs_present": true,
+      "runs": [
+        {
+          "case_id": "fault-01",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 32.32239741599187,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 7093,
+            "output_tokens": 300,
+            "total_tokens": 7393,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "bb4eae61e73aee86994174aa80f305eb2a41aaed4d7562524f05c5a4d4db3688"
+        },
+        {
+          "case_id": "fault-01",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 2.3608506669988856,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2060,
+            "output_tokens": 57,
+            "total_tokens": 2117,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "af5042da2f101daf1f139baf90b4f6009eabfe7e93d9a41c8526ddb9452ef19e"
+        },
+        {
+          "case_id": "fault-02",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 3.2439212079625577,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2058,
+            "output_tokens": 57,
+            "total_tokens": 2115,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "fa3bef9056a818f5349425cbb3aa017c871ade0a4021ace5650b19342c9df338"
+        },
+        {
+          "case_id": "fault-02",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 23.731432999949902,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 7863,
+            "output_tokens": 313,
+            "total_tokens": 8176,
+            "usage_complete": false,
+            "model_calls": 7,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "54047a4ee4061347b489a55242531ae1889741aaf6d93450609fbad96034f52c"
+        },
+        {
+          "case_id": "fault-03",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 21.604161333991215,
+          "tool_calls": 12,
+          "usage": {
+            "input_tokens": 12867,
+            "output_tokens": 627,
+            "total_tokens": 13494,
+            "usage_complete": true,
+            "model_calls": 10,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "5df934ea0e379d43dfa0df59e686a85979b54e401660b3d043366babc4b2a562"
+        },
+        {
+          "case_id": "fault-03",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 1.991097667021677,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2062,
+            "output_tokens": 61,
+            "total_tokens": 2123,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "eb7cff1b25f6997f568f0f919cf5f3d4dba6fe1e38954293a2bcff714edb14ed"
+        },
+        {
+          "case_id": "fault-04",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 3.27971183299087,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2064,
+            "output_tokens": 59,
+            "total_tokens": 2123,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "0e23a012fb308f7351ed2d4024ad05f991bd4f099febdff60f4bf5e8dbe5b085"
+        },
+        {
+          "case_id": "fault-04",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 16.872391166049056,
+          "tool_calls": 4,
+          "usage": {
+            "input_tokens": 5049,
+            "output_tokens": 229,
+            "total_tokens": 5278,
+            "usage_complete": false,
+            "model_calls": 4,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "quota",
+          "trace_sha256": "85b33171627275613f276be8b5671f1005c3c6ec5251d653d4f47cb51238a15e"
+        },
+        {
+          "case_id": "fault-05",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 12.280264624976553,
+          "tool_calls": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "usage_complete": false,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": false,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "quota",
+          "trace_sha256": "0d278e296fde8ed4b3e251c6b07094597a6b01b3bf2f25662fd97666cd040a43"
+        },
+        {
+          "case_id": "fault-05",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 2.7008641250431538,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2060,
+            "output_tokens": 58,
+            "total_tokens": 2118,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "ab4ecf4cabe405d1d596927e6ee406748d21bfa26f3a769c33b0ba74b09f725c"
+        },
+        {
+          "case_id": "fault-06",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 1.9895976249827072,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2060,
+            "output_tokens": 56,
+            "total_tokens": 2116,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "09826d353ca7fb3d25e5978ed989a3a47b110f8ccd9d400d3b81efcb31d9945f"
+        },
+        {
+          "case_id": "fault-06",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 12.629577999934554,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 7049,
+            "output_tokens": 288,
+            "total_tokens": 7337,
+            "usage_complete": true,
+            "model_calls": 6,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "ea101bb28723d92c702313cbd1fd9d42e51f05989ac8dd3f9b214c0b7cc7051d"
+        },
+        {
+          "case_id": "fault-07",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 24.154736957978457,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 6843,
+            "output_tokens": 291,
+            "total_tokens": 7134,
+            "usage_complete": false,
+            "model_calls": 7,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "quota",
+          "trace_sha256": "0369d1b84c256171834b9b359aff0c085f3efba02dada681ec77214a57c81124"
+        },
+        {
+          "case_id": "fault-07",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 2.8346478330204263,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2057,
+            "output_tokens": 55,
+            "total_tokens": 2112,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "d6dbfd9900546831373dd7be586be26bd546b8243c84135ea0124bf7d6429123"
+        },
+        {
+          "case_id": "fault-08",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 11.505262207938358,
+          "tool_calls": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "usage_complete": false,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": false,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "quota",
+          "trace_sha256": "c31c49642778b22b54a1d2bec3d14444f643e9973a334abf516c0e393afd811c"
+        },
+        {
+          "case_id": "fault-08",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 15.287622749921866,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 7941,
+            "output_tokens": 317,
+            "total_tokens": 8258,
+            "usage_complete": true,
+            "model_calls": 7,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "5718ab49bcbe9cd4e02f2b1e4c8aa46a6535696131d6b114eda2cb3e2f397a03"
+        },
+        {
+          "case_id": "fault-09",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 20.91991458297707,
+          "tool_calls": 11,
+          "usage": {
+            "input_tokens": 36768,
+            "output_tokens": 778,
+            "total_tokens": 37546,
+            "usage_complete": true,
+            "model_calls": 10,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "budget",
+          "trace_sha256": "206b0f02b5b63f3858a9f9d1dff38b4f3cb2f164b50c4f794d4b1a3d53252afb"
+        },
+        {
+          "case_id": "fault-09",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 12.43502208404243,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2064,
+            "output_tokens": 58,
+            "total_tokens": 2122,
+            "usage_complete": false,
+            "model_calls": 1,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "c220f1e88eb457cc0d3fe0662e46e8a4b3bf247ef10bf845c5b2573a21dbae3b"
+        },
+        {
+          "case_id": "fault-10",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 2.069717708043754,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2060,
+            "output_tokens": 57,
+            "total_tokens": 2117,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "ab5ad7eae2d16486c1e77a3917ad1f04c2832bd0988aae4ad1ed781fefd3bc78"
+        },
+        {
+          "case_id": "fault-10",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 22.777799250092357,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 7080,
+            "output_tokens": 300,
+            "total_tokens": 7380,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "a9e5fa274a78611a5f1f46701d988048b03743af20eb9d6912cb3e046aa01a86"
+        },
+        {
+          "case_id": "fault-11",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 14.480605916003697,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 8701,
+            "output_tokens": 417,
+            "total_tokens": 9118,
+            "usage_complete": true,
+            "model_calls": 7,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "e2e8bca34a44935439c317fa78b66bd770f5f99b2dab5b3cbb85830f2dea2c50"
+        },
+        {
+          "case_id": "fault-11",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 1.967963624978438,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2060,
+            "output_tokens": 58,
+            "total_tokens": 2118,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "1018863d58156de6491ededc28ebc70daffc497e5e59ed0a485d4d86e07f2611"
+        },
+        {
+          "case_id": "fault-12",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 2.2981482920004055,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2057,
+            "output_tokens": 57,
+            "total_tokens": 2114,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "8b753f0727bfd9dba0d2d86af44388bded208a959efc64a6de10ad331b9ddc07"
+        },
+        {
+          "case_id": "fault-12",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 49.39106524991803,
+          "tool_calls": 11,
+          "usage": {
+            "input_tokens": 23272,
+            "output_tokens": 592,
+            "total_tokens": 23864,
+            "usage_complete": false,
+            "model_calls": 9,
+            "retries": 3,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "85309e6afe90f99c9781b3d68d46b8789c210f509b55967abbfbbcdd669cc030"
+        },
+        {
+          "case_id": "fault-13",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 18.657655958086252,
+          "tool_calls": 9,
+          "usage": {
+            "input_tokens": 10317,
+            "output_tokens": 452,
+            "total_tokens": 10769,
+            "usage_complete": true,
+            "model_calls": 9,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "67a7ee5664e371673b9d8fce4f3f6b0df08d93101e9265a5179a5107ef9f09a4"
+        },
+        {
+          "case_id": "fault-13",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 11.698930916027166,
+          "tool_calls": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "usage_complete": false,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": false,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "quota",
+          "trace_sha256": "965385ea38d550cb9d4da5f9bbe255034440a8388f3d241d06308072bf9c0914"
+        },
+        {
+          "case_id": "fault-14",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 2.7538489170838147,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2064,
+            "output_tokens": 60,
+            "total_tokens": 2124,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "5b30b08d3b7f5a95cc1888da3c49596e1f026019dc27c4101dd6b56e9ab1c832"
+        },
+        {
+          "case_id": "fault-14",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 30.961310459068045,
+          "tool_calls": 10,
+          "usage": {
+            "input_tokens": 12725,
+            "output_tokens": 564,
+            "total_tokens": 13289,
+            "usage_complete": false,
+            "model_calls": 10,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "85afa787292b0505860f0130da439c56005f6bd9c3faca6b1fdd6b8d1bca5644"
+        },
+        {
+          "case_id": "fault-15",
+          "system": "planned_recovery",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 35.138351208064705,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 8656,
+            "output_tokens": 371,
+            "total_tokens": 9027,
+            "usage_complete": false,
+            "model_calls": 7,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": true,
+          "fault_task_success": true,
+          "execution_failure_kind": null,
+          "trace_sha256": "5ea7f6f2fadfe6056eded6987d412e9bee9d1e984b65d916d50682aefb339915"
+        },
+        {
+          "case_id": "fault-15",
+          "system": "no_explicit_plan",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 2.0786219590809196,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 2061,
+            "output_tokens": 60,
+            "total_tokens": 2121,
+            "usage_complete": true,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "fault_injected": true,
+          "fault_recovered": false,
+          "fault_task_success": false,
+          "execution_failure_kind": "other",
+          "trace_sha256": "fcd14d4604ac47843ded490af9ae08d6f64532d1895250bed136ec0993c343e9"
+        }
+      ]
+    },
+    {
+      "run_id": "20261127T191957090349Z",
+      "configuration": {
+        "git_commit": "ea92234bef8800c3e4efe4f4612c41576ee5f60b",
+        "model": "gemini-3.5-flash-lite",
+        "max_calls": 12,
+        "max_turns": 10,
+        "retriever": "keyword",
+        "temperature": 0,
+        "pricing": null,
+        "request_interval_seconds": 2.1,
+        "systems": [
+          "multi_prefetch",
+          "multi"
+        ],
+        "case_ids": [
+          "s4-001",
+          "s4-002",
+          "s4-003",
+          "s4-004",
+          "s4-005",
+          "s4-006",
+          "s4-007",
+          "s4-008",
+          "s4-009",
+          "s4-010",
+          "s4-011",
+          "s4-012"
+        ],
+        "repeats": 1,
+        "repeat_ids": [],
+        "facts_sha256": "44869d6654f5c4af9b381002e8c084af881c678b6a6e57f8f1cb10712064bfcb",
+        "cases_sha256": "0bf3a3f29380152991612bfa51690592978f53becdca59fba6cbc4b784967def",
+        "index_sha256": "47b7d83cf5cfc299ced4a9e0ea6dbb2feb4ff397fc7881bc51a4706ac11c26ca",
+        "code_sha256": {
+          "__init__.py": "dcc49f5ab992cbc7c16c584c446a60e7783a30033cb93963bbaabdb447a4356e",
+          "__main__.py": "bfbdd9f3fd87cdfe52d90120f0f0551bd4c5dfecb94e3377f9041d172c819944",
+          "agent.py": "4f634c2e15d2ec382eaca556907c70983fddf78ab83894d583c4a3b29a66c97d",
+          "baseline.py": "b731c63a3215a5bb28740fa0a713dc07db0881a823bf3e8385bdec6c2091ef83",
+          "calculations.py": "65e6b95a8dc5955866b208344725141e3cb8cf306e6da8340e46fe663ddbf5af",
+          "embeddings.py": "c4ba5f4f42865be5ec11465a9b886d79eb5cc4cd948edb07d0187e2008e34311",
+          "evaluation.py": "dcb4c612645cab01f50622b4e27891dd672528b19264b90ec66d96028b69b9a3",
+          "facts.py": "cf118f6e8fce8980864f80bcd46d95e07616a783a0c082f2d5e0507a1089aedd",
+          "fault_eval.py": "c3a699ab40d8c434b7eb3e7c821bbfc3bc17aeab5c937c0a1f7e839c473fb553",
+          "faults.py": "a8aaed5d9e88f764850e07e6f5c2091419480ba1fe02c0077efa196232cab9cf",
+          "filings.py": "6ef1c7f2c26eb946e1ac67026ed6fea30d97817e5ae31d12d5a5ad6f625905b4",
+          "freeze.py": "c651c1f559faf6169bdb536194baafe08cb42653238578343e6e5ea76730a1f5",
+          "ingest.py": "1ce12b345cb3844c5462d7baa465d7c640eb98a3013921c6cc70a57028855f27",
+          "memo.py": "ca1004e596a76136b9136cb880e217413f9033d16d314a9224128b6b06287cdc",
+          "model.py": "02f1c09cd7af3945cf2765ea88dd05e4dd91c7ade4b6ad349e577eed705465aa",
+          "ratios.py": "ce2d571629dd531fc50b39d062fdddbacf49ff6c6df9ad3effb09d96b4b54d33",
+          "retrieval.py": "dd71609fe26167dbef233f246cda4021b627e0108274d9e931dbf0b4985c9f1d",
+          "retrieval_eval.py": "25ee0675aea772d7d6b31fd24434aeb2cf985a0e3019398ef508f9e6b57b3b0b",
+          "sec.py": "135c4fb6900f245cfae525064be2024c935152cf043c7f83fdca5a147ff0c263",
+          "stats.py": "ab89df67fb2a7292104151e29fb2fdb67bcc57682aab70f0f35ec3a014dd7b47",
+          "tools.py": "f75bbc02030e73818b2cd4f6061719917d84ab1014d26fbb8f7b887cd4cf1cc8",
+          "trace_tools.py": "2ba0dda655dc653e98a3fa07c3d3fa14d4f48c36aaca9c5cdd7a3923feb06d1f",
+          "uploads.py": "ac13d5a5e484595ae4acedfda07988b51369190d5326bb3a0687a5c52f2ba24e",
+          "web.py": "cb0f48e80f0e6adc8310725c036eef75b5f13b9ac5277ceca77f733f6de13c59",
+          "workflow.py": "bc186681cf43adcb0901bb82a12438ba3a5b89d8b526e1ece2aae90fdce9835c"
+        },
+        "measurement_boundary": "System run includes model/tool calls, retries and query embedding; excludes initial data loading and trace serialization. Caches may be warm. Orders alternate by case/repeat.",
+        "budget_note": "Same configured ceilings; baseline has a fixed two-model/two-tool pipeline. Agent may spend more within the ceilings."
+      },
+      "summary": {
+        "systems": {
+          "multi": {
+            "passed": 8,
+            "total": 12,
+            "accuracy": 0.6666666666666666,
+            "wilson_95": [
+              0.3906175873976139,
+              0.8618821601026385
+            ],
+            "latency_mean_seconds": 20.70323002083266,
+            "latency_p95_seconds": 33.64407879207283,
+            "estimated_cost_usd": null,
+            "model_calls": 63,
+            "tool_calls": 65,
+            "execution_errors": 0,
+            "incomplete": 3
+          },
+          "multi_prefetch": {
+            "passed": 9,
+            "total": 12,
+            "accuracy": 0.75,
+            "wilson_95": [
+              0.46768966087934005,
+              0.9110599603710386
+            ],
+            "latency_mean_seconds": 16.396348586829845,
+            "latency_p95_seconds": 32.45400987495668,
+            "estimated_cost_usd": null,
+            "model_calls": 65,
+            "tool_calls": 75,
+            "execution_errors": 0,
+            "incomplete": 2
+          }
+        },
+        "primary_cases": 12,
+        "additional_runs": 0,
+        "failure_categories": {
+          "multi": {
+            "execution_incomplete": 3,
+            "company": 1,
+            "fiscal_year": 1
+          },
+          "multi_prefetch": {
+            "execution_incomplete": 2,
+            "company": 1,
+            "fiscal_year": 1
+          }
+        },
+        "agent_minus_baseline": null,
+        "paired_comparisons": {
+          "multi_minus_multi_prefetch": {
+            "difference": -0.08333333333333333,
+            "ci95": [
+              -0.3333333333333333,
+              0.16666666666666666
+            ],
+            "resamples": 1000,
+            "seed": 0,
+            "inconclusive": true,
+            "both": 7,
+            "only_a": 1,
+            "only_b": 2,
+            "neither": 2
+          }
+        },
+        "repeated_cases": {},
+        "run_status": "quota_stopped",
+        "scheduled_runs": 24,
+        "completed_runs": 24
+      },
+      "all_scheduled_runs_present": true,
+      "runs": [
+        {
+          "case_id": "s4-001",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 21.331075249938294,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 10764,
+            "output_tokens": 329,
+            "total_tokens": 11093,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "38fa712bf249445b5b8a8065392e32a9e1944a43b9d85cf470e2d6ce99cc1c7a"
+        },
+        {
+          "case_id": "s4-001",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 12.713455375051126,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 7059,
+            "output_tokens": 307,
+            "total_tokens": 7366,
+            "usage_complete": true,
+            "model_calls": 6,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "2828965a56a37cf12cf4fd47c7c05965ec1ad24857240962fb2b0ac9614de288"
+        },
+        {
+          "case_id": "s4-002",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 27.77930570789613,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 7042,
+            "output_tokens": 285,
+            "total_tokens": 7327,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "297da23c1dfc87ef3beccb2a15aa922fb5fba2e4e775076a20cad90aa550ca53"
+        },
+        {
+          "case_id": "s4-002",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 12.505279332981445,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 10717,
+            "output_tokens": 299,
+            "total_tokens": 11016,
+            "usage_complete": true,
+            "model_calls": 6,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "ba1392b6fd4b12bcbed7a849ea46edae2300d6a8c57d1abb007f218c0270f6e8"
+        },
+        {
+          "case_id": "s4-003",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 14.783860750030726,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 13949,
+            "output_tokens": 373,
+            "total_tokens": 14322,
+            "usage_complete": true,
+            "model_calls": 7,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "a2d8a79a1b8152a24bbfa3f7c829c7c32352cb70de0fe8ad43e43e86ae9c0232"
+        },
+        {
+          "case_id": "s4-003",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 33.64407879207283,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 7063,
+            "output_tokens": 295,
+            "total_tokens": 7358,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "61c7e873590c8e75582618d7e5012c0906616e6fef12289abf8727933ee31ab3"
+        },
+        {
+          "case_id": "s4-004",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 20.785233000060543,
+          "tool_calls": 11,
+          "usage": {
+            "input_tokens": 12799,
+            "output_tokens": 638,
+            "total_tokens": 13437,
+            "usage_complete": true,
+            "model_calls": 10,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "bfadaaf0b39f3c9cb5d823cf86d0022dda2b5048fd30ab2169051c82a6d253e6"
+        },
+        {
+          "case_id": "s4-004",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 32.45400987495668,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 9779,
+            "output_tokens": 283,
+            "total_tokens": 10062,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "11a53642fa97664166750dd37c6996294ceb35732f7979e0123a8f53575cab80"
+        },
+        {
+          "case_id": "s4-005",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 13.291244167019613,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 10822,
+            "output_tokens": 318,
+            "total_tokens": 11140,
+            "usage_complete": true,
+            "model_calls": 6,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "f2c63740232e04860d1dd9d896fed77a9459b78f1dbe5b3e34d5e379ea98ae58"
+        },
+        {
+          "case_id": "s4-005",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 14.617019500001334,
+          "tool_calls": 7,
+          "usage": {
+            "input_tokens": 7949,
+            "output_tokens": 321,
+            "total_tokens": 8270,
+            "usage_complete": true,
+            "model_calls": 7,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "648d24aa5883988ade7198d83834d068c1b0d680997738f85024f9e64bf6a78b"
+        },
+        {
+          "case_id": "s4-006",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 20.492249459028244,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 7467,
+            "output_tokens": 380,
+            "total_tokens": 7847,
+            "usage_complete": false,
+            "model_calls": 5,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "1cdba96243492dcaa365db7c5d0ea05d8899c1e3b4e35c2bb718cc71bc632396"
+        },
+        {
+          "case_id": "s4-006",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 20.720809207996354,
+          "tool_calls": 8,
+          "usage": {
+            "input_tokens": 8373,
+            "output_tokens": 488,
+            "total_tokens": 8861,
+            "usage_complete": false,
+            "model_calls": 5,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "6fc3b65b5993ad5284cc0de9955207b927e25ef7da1b0f651e193969464b7615"
+        },
+        {
+          "case_id": "s4-007",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 14.851562875090167,
+          "tool_calls": 9,
+          "usage": {
+            "input_tokens": 15550,
+            "output_tokens": 418,
+            "total_tokens": 15968,
+            "usage_complete": true,
+            "model_calls": 7,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "8b9d02f5c49af4a481ff66e2676b1b8c4d36fdde9d851c71a092e92c505046e5"
+        },
+        {
+          "case_id": "s4-007",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 22.101635416969657,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 15441,
+            "output_tokens": 252,
+            "total_tokens": 15693,
+            "usage_complete": false,
+            "model_calls": 6,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "32422e44e869b349d1629fcf7f86c606799f57727667d00ba838c6019c6b7299"
+        },
+        {
+          "case_id": "s4-008",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "company",
+              "fiscal_year"
+            ]
+          },
+          "latency_seconds": 21.2234997919295,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 8268,
+            "output_tokens": 243,
+            "total_tokens": 8511,
+            "usage_complete": false,
+            "model_calls": 5,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "2e27c502e96ba69bc3adfe53d8e0ae23e759f2ac5a4afbfe323ea8d86b16cdac"
+        },
+        {
+          "case_id": "s4-008",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "company",
+              "fiscal_year"
+            ]
+          },
+          "latency_seconds": 10.633722250000574,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 9322,
+            "output_tokens": 306,
+            "total_tokens": 9628,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "55292251db45927d1641853d86c5b127e0a7f6822d6082651aa4cc693c6e06ff"
+        },
+        {
+          "case_id": "s4-009",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 10.400935624958947,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 10628,
+            "output_tokens": 370,
+            "total_tokens": 10998,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "d1f8e96d2afe26d0586ea363ca80136e59dd6019c1ff2148a7782afd9fbfc784"
+        },
+        {
+          "case_id": "s4-009",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 31.046248749946244,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 9764,
+            "output_tokens": 320,
+            "total_tokens": 10084,
+            "usage_complete": false,
+            "model_calls": 5,
+            "retries": 2,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "9ae968465874dce52f01b408326bf6688cf502cd3bf6fd71d390014dd318a87f"
+        },
+        {
+          "case_id": "s4-010",
+          "system": "multi",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 20.329113166080788,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 8886,
+            "output_tokens": 284,
+            "total_tokens": 9170,
+            "usage_complete": false,
+            "model_calls": 5,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "5e81448baee21c5ffceaad16632225cad1078b2749f2408010c91ac71bec7037"
+        },
+        {
+          "case_id": "s4-010",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 10.665669542038813,
+          "tool_calls": 5,
+          "usage": {
+            "input_tokens": 9651,
+            "output_tokens": 285,
+            "total_tokens": 9936,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "cc020fb872cf2cf1872ee2873525c5632f136d34e15f272de590a283822828aa"
+        },
+        {
+          "case_id": "s4-011",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "complete",
+          "score": {
+            "passed": true,
+            "failures": []
+          },
+          "latency_seconds": 10.572868749964982,
+          "tool_calls": 6,
+          "usage": {
+            "input_tokens": 12463,
+            "output_tokens": 331,
+            "total_tokens": 12794,
+            "usage_complete": true,
+            "model_calls": 5,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": null,
+          "trace_sha256": "91d4f2effabf7e0cd1d8c515968f97dc2e93f0e316f5055563f85e3ee6145457"
+        },
+        {
+          "case_id": "s4-011",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 11.456703332951292,
+          "tool_calls": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "usage_complete": false,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "891268f476e1c0f16d32987c895cbc25cf981962cf9a6ae0545e079541de429c"
+        },
+        {
+          "case_id": "s4-012",
+          "system": "multi",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 12.250217958004214,
+          "tool_calls": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "usage_complete": false,
+            "model_calls": 1,
+            "retries": 0,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "7a21061dec2bdaf167e182c221babef0cf8134fd0559c62c59ff91b4e7a72b72"
+        },
+        {
+          "case_id": "s4-012",
+          "system": "multi_prefetch",
+          "repeat": 0,
+          "status": "incomplete",
+          "score": {
+            "passed": false,
+            "failures": [
+              "execution_incomplete"
+            ]
+          },
+          "latency_seconds": 24.54514541698154,
+          "tool_calls": 1,
+          "usage": {
+            "input_tokens": 158,
+            "output_tokens": 48,
+            "total_tokens": 206,
+            "usage_complete": false,
+            "model_calls": 2,
+            "retries": 1,
+            "estimated_cost_usd": null,
+            "actual_spend_usd": null,
+            "cost_note": "Estimate unavailable for missing usage, retries, cached/thinking tokens, or absent pricing. Billing is not measured."
+          },
+          "execution_failure_kind": "quota",
+          "trace_sha256": "5df33680a549cdf5f7335accc7391d3c3837663d86e8095d188f5a13be80db38"
+        }
+      ]
+    }
+  ],
+  "retrieval": [
+    {
+      "run_id": "20261127T185849678867Z",
+      "split": "retrieval-dev",
+      "git_commit": "ead0f6e88aee17ad8d38683f1f192a8ea9e44191",
+      "k": 5,
+      "methods": {
+        "keyword": {
+          "hit_at_5": 0.5217391304347826,
+          "hits": 12,
+          "questions": 23,
+          "wilson_95": [
+            0.3296242986421849,
+            0.7076313046005427
+          ],
+          "mrr_at_5": 0.3731884057971014,
+          "recall_at_5": 0.3659420289855073,
+          "latency_mean_seconds": 0.0006431431823369602,
+          "latency_p95_seconds": 0.0008991670329123735,
+          "by_qtype": {
+            "lexical": {
+              "hits": 3,
+              "questions": 5
+            },
+            "numeric": {
+              "hits": 4,
+              "questions": 5
+            },
+            "paraphrase": {
+              "hits": 4,
+              "questions": 9
+            },
+            "table": {
+              "hits": 1,
+              "questions": 4
+            }
+          }
+        },
+        "tfidf": {
+          "hit_at_5": 0.6956521739130435,
+          "hits": 16,
+          "questions": 23,
+          "wilson_95": [
+            0.49133870939427393,
+            0.8439617197902755
+          ],
+          "mrr_at_5": 0.5108695652173914,
+          "recall_at_5": 0.49637681159420294,
+          "latency_mean_seconds": 0.0004910035666240299,
+          "latency_p95_seconds": 0.0006543330382555723,
+          "by_qtype": {
+            "lexical": {
+              "hits": 4,
+              "questions": 5
+            },
+            "numeric": {
+              "hits": 4,
+              "questions": 5
+            },
+            "paraphrase": {
+              "hits": 5,
+              "questions": 9
+            },
+            "table": {
+              "hits": 3,
+              "questions": 4
+            }
+          }
+        },
+        "bm25": {
+          "hit_at_5": 0.6956521739130435,
+          "hits": 16,
+          "questions": 23,
+          "wilson_95": [
+            0.49133870939427393,
+            0.8439617197902755
+          ],
+          "mrr_at_5": 0.4855072463768116,
+          "recall_at_5": 0.532608695652174,
+          "latency_mean_seconds": 0.0004507644233577277,
+          "latency_p95_seconds": 0.0005786670371890068,
+          "by_qtype": {
+            "lexical": {
+              "hits": 4,
+              "questions": 5
+            },
+            "numeric": {
+              "hits": 4,
+              "questions": 5
+            },
+            "paraphrase": {
+              "hits": 5,
+              "questions": 9
+            },
+            "table": {
+              "hits": 3,
+              "questions": 4
+            }
+          }
+        }
+      },
+      "paired_comparisons": {
+        "keyword_vs_tfidf": {
+          "difference": -0.17391304347826086,
+          "ci95": [
+            -0.34782608695652173,
+            -0.043478260869565216
+          ],
+          "resamples": 1000,
+          "seed": 0,
+          "inconclusive": false,
+          "both": 12,
+          "only_a": 0,
+          "only_b": 4,
+          "neither": 7
+        },
+        "keyword_vs_bm25": {
+          "difference": -0.17391304347826086,
+          "ci95": [
+            -0.34782608695652173,
+            -0.043478260869565216
+          ],
+          "resamples": 1000,
+          "seed": 0,
+          "inconclusive": false,
+          "both": 12,
+          "only_a": 0,
+          "only_b": 4,
+          "neither": 7
+        },
+        "tfidf_vs_bm25": {
+          "difference": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "resamples": 1000,
+          "seed": 0,
+          "inconclusive": true,
+          "both": 16,
+          "only_a": 0,
+          "only_b": 0,
+          "neither": 7
+        }
+      },
+      "unlabeled_questions": [
+        "rq-07",
+        "rq-21"
+      ],
+      "no_relevant_passage": [],
+      "index_sha256": "47b7d83cf5cfc299ced4a9e0ea6dbb2feb4ff397fc7881bc51a4706ac11c26ca",
+      "questions_sha256": "900a6577c73163ccf51a6b060eba946322f66560f024a93f0102a686461e74e5",
+      "latency_note": "Per-query wall time inside search(). For embedding and hybrid it includes the Gemini query-embedding call unless the query vector was cached; see embedding_usage.cache_hits."
+    }
+  ],
+  "additional_attempts": [
+    {
+      "experiment": "five_method_retrieval",
+      "status": "blocked_provider_quota",
+      "error": "Gemini embedding HTTP 429",
+      "complete_results_available": false,
+      "note": "Do not interpret missing embedding/hybrid outcomes as zero accuracy. Existing partial vector cache was retained."
+    }
+  ]
+}
