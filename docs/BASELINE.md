@@ -63,9 +63,12 @@ Disclosure scope comes from cited source metadata. Numerical scope comes
 from the returned calculation. API errors and exhausted budgets count as
 failed executions, never factual `insufficient_evidence` verdicts.
 
-The batch preserves every attempted run, including errors, and returns zero
-when it finishes writing the batch. Read accuracy/error counts in the summary;
-process exit success is not an accuracy threshold.
+The batch preserves every completed attempt, including errors, and returns zero
+when the scheduled batch finishes. Quota-stopped or interrupted batches return
+two and save a partial summary. Read accuracy/error counts and run_status;
+process exit success is not an accuracy threshold. Three consecutive HTTP 429
+failures stop further calls. Ctrl+C records the interrupted case/system without
+inventing its missing outcome or token usage.
 
 ## Artifacts and uncertainty
 
@@ -99,8 +102,13 @@ costs are not included in the text-model estimate.
 
 ## Remaining evaluation work
 
+The capability-scoped workflow can be included with
+`--systems baseline,agent,multi`; this schedules 36 primary development runs.
+All scopes share the same per-claim ceilings. See `docs/WORKFLOW.md` for the
+permission matrix and the separate fault/optimization experiments.
+
 This implements the evaluation infrastructure; it does not complete held-out
-testing, memo decomposition or reviewer experiments. Reserve a separate final
+testing or independent memo evaluation. Reserve a separate final
 claim set only after freezing sources and grading rules. Retrieval question
 labels now include the user's confirmation of AI-assisted review; rq-07 and
 rq-21 still require wording/source decisions. Embedding/hybrid pooling and the

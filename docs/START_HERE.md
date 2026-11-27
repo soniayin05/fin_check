@@ -1,5 +1,11 @@
 # How to start building FinCheck
 
+Current entry point (November 27): `python3 -m fincheck serve` opens the local
+PDF upload, approval and evidence-checking flow. `docs/WORKFLOW.md` documents
+the implemented permission scopes, recovery and evaluation commands;
+`docs/IMPLEMENTATION_STATUS.md` tracks remaining acceptance work. The dated
+milestones below describe the original roadmap, not unfinished implementation.
+
 ## First session: understand the existing tools
 
 1. Run `python -m fincheck demo`.
@@ -27,7 +33,7 @@ Done means: one natural-language claim is checked against real runtime sources, 
 ## Milestone 2: F1 retrieval and F3 multi-agent review (through November 13)
 
 - Persist the index. Filter by company and year. Implement TF-IDF, BM25, and embeddings behind the same search interface; add hybrid ranking or reranking.
-- Implement `fincheck/workflow.py` using LangGraph once the ordinary tools work. Pin compatible versions in a clean environment.
+- `fincheck/workflow.py` now uses the existing Python controller, with tool permissions enforced separately for planning, evidence and review.
 - Shared state: original claim, plan, retrieved observations/passages, draft, reviewer issues, repair count, tool count, final status.
 - Coordinator -> researcher -> reviewer -> finalize, or a bounded repair loop. The reviewer must inspect original evidence, not merely agree with the draft.
 - Enforce each agent's role through explicit tool and state permissions, not only its prompt or name. The coordinator may write the plan and routing decision; the evidence agent may use search, source-reading, and calculation tools; the reviewer may read the claim, draft, and original evidence and write review issues; and the finalizer may submit the verdict from approved evidence. Do not give every agent the full tool list by default.
@@ -38,7 +44,7 @@ Done means: one natural-language claim is checked against real runtime sources, 
 ## Milestone 3: product flow, F4 recovery, F7 improvement (through November 25)
 
 - Extract claims with offsets into the memo; retain dates, units, and qualifications. Test omitted claims and accidental additions separately.
-- Add a small Streamlit interface: memo input -> claim table -> evidence panel -> proposed correction. Install and pin its dependencies when implementing it.
+- The local interface now uses the standard library HTTP server: PDF upload -> reviewed claim selection -> evidence report and annotated PDF copy.
 - Keep runtime errors separate from an evidence-based claim verdict. A timeout is an execution failure with incomplete evidence, not proof that a public fact is absent.
 - Transient timeouts: retry safe reads with backoff. Wrong period or missing data: revise the plan. Exhausted budget: return a clear incomplete result.
 - Inject five tool failures, five timeouts, and five bad-data cases, each with distinct inputs. Compare with the no-explicit-plan version.

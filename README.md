@@ -146,7 +146,9 @@ python3 -m fincheck traces --trace-scope review
 - Reviewer scopes and a local upload UI are implemented. Final held-out comparison and completed feature credit are not established. Extraction coverage, qualifier preservation and full experiments still need evaluation. Scans/charts need visual/OCR review; optional memory and multimodal chart extraction remain pending.
 - Traces record model usage when supplied and leave dollar cost unavailable until pricing is configured. Raw traces include user claims and filing text; review them before sharing.
 
-The planned F1/F3/F4/F7 features are still the later project scope. See the docs for the staged implementation plan.
+F1/F3/F4/F7 have implementation paths; final feature credit depends on the
+required experiments and submission evidence. See the status document for
+remaining acceptance work.
 
 ## Credentials and artifacts
 

@@ -67,6 +67,12 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('Permission denied',run['events'][1]['output']['error'])
         self.assertNotIn('verdict',run['result'])
 
+    def test_model_cannot_declare_missing_evidence_without_lookup(self):
+        draft=call('propose_verdict',verdict='insufficient_evidence',explanation='I do not know.',evidence_ids=[])
+        run,_=self.run_flow([PLAN,draft],max_turns=2)
+        self.assertEqual(run['status'],'incomplete')
+        self.assertIn('Use an evidence tool',next(e['output']['error'] for e in run['events'] if e.get('name')=='propose_verdict'))
+
     def test_additional_numeric_citation_reaches_original_review(self):
         facts,calc,draft,reads=protocol()
         passages=PassageStore();passages.passages=[dict(id='filing-extra',company='MSFT',year=2024,text='Revenue was $245.122 billion.')]

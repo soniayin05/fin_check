@@ -23,5 +23,8 @@ class FaultInjector:
         elif self.variant=='period' and rows:rows[0]['period_end']='1900-01-01'
         elif self.variant=='duplicate' and rows:rows.append(deepcopy(rows[0]))
         elif self.variant=='source':result['sources']={'injected-source':{'url':'invalid'}}
-        else:result['value']=float(result.get('value',0))+123
+        else:
+            if rows:rows[0]['value']=float(rows[0]['value'])+123
+            if 'verified_value' in result:result['verified_value']+=123
+            else:result['value']=float(result.get('value',0))+123
         return result

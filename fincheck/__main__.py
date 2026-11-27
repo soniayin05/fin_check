@@ -30,7 +30,7 @@ def facts_path(root: Path, command: str, explicit: Path | None) -> Path:
     if explicit is not None:
         return explicit
     sec = root / "data/facts/observations.json"
-    if command in {"check", "ratio", "verify-number", "compare-systems", "check-memo", "check-workflow", "eval-faults"} and sec.exists():
+    if command in {"check", "ratio", "verify-number", "compare-systems", "check-memo", "check-workflow", "eval-faults", "freeze-eval"} and sec.exists():
         return sec
     return root / "data/sample/financial_facts.json"
 
@@ -41,7 +41,7 @@ def main() -> int:
                                             "facts-report", "ratio", "build-index", "label-retrieval",
                                             "eval-retrieval", "answer-sheet", "score-answers", "verify-number", "compare-systems",
                                             "demo-memo", "ingest-memo", "extract-memo", "check-memo",
-                                            "check-workflow", "eval-faults", "traces", "export-traces", "serve"])
+                                            "check-workflow", "eval-faults", "traces", "export-traces", "serve", "freeze-eval"])
     parser.add_argument("text", nargs="?", help="Claim for check, keywords for search, or a sheet for score-answers")
     parser.add_argument("--include-sec", action="store_true",
                         help="Also archive SEC Company Facts, 10-K filings and earnings releases")
@@ -84,6 +84,8 @@ def main() -> int:
     parser.add_argument('--trace-status',help='Filter traces by run status')
     parser.add_argument('--port',type=int,default=8765,help='Local upload interface port')
     parser.add_argument('--tickers',help='Additional SEC tickers for prepare-data --include-sec (up to ten)')
+    parser.add_argument('--split',choices=['dev','heldout'],default='dev',help='Comparison label; heldout requires a matching freeze')
+    parser.add_argument('--freeze',type=Path,help='Previously recorded freeze.json for compare-systems')
     args = parser.parse_args()
     if args.cases is None:
         args.cases = ROOT / ('evals/faults/cases.jsonl' if args.command=='eval-faults' else
@@ -141,7 +143,7 @@ def main() -> int:
             print(str(error))
             return 1
     passages = PassageStore(index_path, embedder=embedder)
-    if args.command in {'compare-systems','check-workflow','eval-faults'} and args.method:
+    if args.command in {'compare-systems','check-workflow','eval-faults','freeze-eval'} and args.method:
         passages.default_method = args.method
     if args.command in {"search", "build-index", "label-retrieval", "eval-retrieval", "answer-sheet"} \
             and not passages.passages:
@@ -157,6 +159,11 @@ def main() -> int:
         store = FactStore(args.facts)
     except (OSError, ValueError, KeyError, TypeError) as error:
         parser.error(f"Cannot load facts from {args.facts}: {error}")
+    if args.command=='freeze-eval':
+        from .freeze import configuration,write_freeze
+        try:print(write_freeze(ROOT,args.facts,configuration(args,passages)))
+        except (ValueError,KeyError,OSError) as error:parser.error(str(error))
+        return 0
     if args.command == 'compare-systems':
         return comparison_command(args, parser, ROOT, store, passages)
     if args.command=='eval-faults':

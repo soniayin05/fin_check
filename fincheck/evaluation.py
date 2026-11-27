@@ -198,7 +198,7 @@ def run_comparison(root, cases, systems, facts_path, cases_path, config, repeats
     def sha(path):
         return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
     commit = subprocess.run(['git','rev-parse','HEAD'],cwd=root,capture_output=True,text=True)
-    meta = dict(config, run_id=run_id, split='dev', git_commit=commit.stdout.strip(),
+    meta = dict(config, run_id=run_id, split=config.get('split','dev'), git_commit=commit.stdout.strip(),
                 facts_sha256=sha(Path(facts_path)), cases_sha256=sha(Path(cases_path)),
                 index_sha256=sha(Path(root)/'data/indexes/passages.json'),
                 repeats=repeats, repeat_ids=list(repeat_ids),
@@ -259,6 +259,7 @@ def comparison_command(args, parser, root, facts, passages):
     from .baseline import FixedBaseline
     from .model import Gemini, ModelError
     from .workflow import Workflow
+    from .freeze import configuration,verify
     try:
         cases=load_cases(args.cases)
         if args.only:
@@ -292,6 +293,11 @@ def comparison_command(args, parser, root, facts, passages):
         if len(set(selected))!=len(selected) or len(selected)<2 or set(selected)-{'baseline','agent','multi','multi_prefetch'}:
             raise ValueError('Choose distinct systems: baseline,agent,multi,multi_prefetch')
         config['systems']=selected
+        config.update(configuration(args,passages),split=args.split)
+        if args.split=='heldout':
+            if not args.freeze or args.cases.resolve().is_relative_to((Path(root)/'evals/dev').resolve()):
+                raise ValueError('Held-out runs need --freeze and an independently authored case file outside evals/dev')
+        if args.freeze:config['freeze_sha256']=verify(root,args.facts,config,args.freeze)
         if args.dry_run:
             print(json.dumps(dict(config,cases=len(cases),scheduled_runs=len(selected)*(len(cases)+(repeats-1)*len(repeat_ids)),
                                   model_calls_made=0,facts=str(args.facts),cases_path=str(args.cases)),indent=2))

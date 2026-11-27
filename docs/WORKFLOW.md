@@ -126,3 +126,33 @@ These commands implement development experiments. Their results are not final
 held-out evidence. Human review of gold, independently annotated memos, final
 freeze and final evaluation remain required. Optional memory, OCR and multimodal
 chart extraction are not implemented by the scoped workflow.
+
+## Freeze before held-out evaluation
+
+After development and gold-review decisions, commit the final code, then run:
+
+```bash
+python3 -m fincheck freeze-eval --systems baseline,agent,multi --method keyword
+```
+
+This makes no model calls. It records code/scorer hashes, facts/index/archive
+manifest hashes, model alias, retriever, embedding settings, request spacing,
+systems and budgets. It stores no credentials or expected answers. Keep the
+printed freeze.json. Documentation/result-only commits may follow; changed
+runtime code, data or settings invalidate the freeze. Provider model aliases,
+service availability and quota are external conditions, so retain run dates.
+
+Independently author and check the held-out cases without tuning the system.
+Replace FREEZE_PATH below with the printed path. Preselect five representative
+case IDs for three total runs each before examining results:
+
+```bash
+python3 -m fincheck compare-systems --split heldout --cases evals/heldout/claims.jsonl --freeze FREEZE_PATH --systems baseline,agent,multi --method keyword --dry-run
+python3 -m fincheck compare-systems --split heldout --cases evals/heldout/claims.jsonl --freeze FREEZE_PATH --systems baseline,agent,multi --method keyword --repeats 3 --repeat-ids YOUR_FIVE_IDS
+```
+
+Held-out mode requires a matching freeze and rejects the development case
+directory. The scorer alone reads gold. The command cannot establish human
+authorship or stop an operator inspecting a case file; record those decisions
+honestly. Final memo extraction coverage and source independence still require
+separate human review.
