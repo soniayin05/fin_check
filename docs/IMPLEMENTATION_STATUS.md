@@ -1,6 +1,6 @@
 # Implementation stages
 
-Status as of November 24, 2026. The active GitHub checkout on Sonia's Mac is
+Status as of November 27, 2026. The active GitHub checkout on Sonia's Mac is
 `/Users/soniayin/Desktop/CIS 1990 Final Project/fin_check`. The containing folder
 has an older checkout with separate Git state and configuration.
 
@@ -10,7 +10,7 @@ has an older checkout with separate Git state and configuration.
 | Retrieval | Five methods implemented; 23 AI-assisted labels confirmed by Sonia; preliminary keyword/TF-IDF/BM25 comparison run | Resolve rq-07/rq-21, review rq-23 wording, pool embedding/hybrid candidates and run answer experiment |
 | Numeric agent tools | Merged into main | Broader claim interpretation evaluation |
 | Baseline and evaluation runner | Implemented: fixed two-stage baseline, shared scope/evidence/numeric scoring, repetitions, traces and statistics | Review 12 new dev claim variants; run full comparison and preselected repetitions; final held-out set later |
-| Memo workflow | Pending | PDF ingestion, claim extraction with source locations and qualifier checks |
+| Memo workflow | Implemented: PDF text/page images, exact-quote extraction, approval/qualifier gates, shared checking budgets, JSON/HTML report | Independently annotated multi-page memos, extraction coverage/atomicity/qualifier evaluation, scans/charts/OCR |
 | Reviewer workflow | Pending | Explicit tool/state permissions, shared budget, bounded repairs and worker failure handling |
 | Recovery and observability experiments | Pending | Fault cases, recovery comparison, trace search and measured optimization |
 | Final evaluation and delivery | Pending | Freeze sources/configuration/scoring, held-out run, interface/demo and write-up |
@@ -61,9 +61,10 @@ model configuration in the active checkout's `.env` for ordinary CLI runs.
 
 ## Next stage
 
-Review `evals/dev/claims_stage4.jsonl` and run the shared comparison described in
-`docs/BASELINE.md`, keeping gold out of model/tool inputs. The original three
-sample development cases remain separate. Then proceed to memo ingestion and
-claim extraction, followed by the permission-separated reviewer workflow.
+Exercise the PDF workflow in `docs/MEMO.md`, review extracted claims against page
+images, and evaluate coverage on independently annotated memos. Then implement
+the permission-separated reviewer workflow. The full shared comparison and
+embedding/hybrid retrieval experiment also remain pending. Keep gold out of
+model/tool inputs; original sample development cases stay separate.
 Budget exhaustion yields `incomplete`; completed missing-evidence checks can
 yield `insufficient_evidence`.

@@ -21,6 +21,7 @@ from .retrieval_eval import (answer_sheet, available_methods, evaluate, format_t
                              load_questions, score_sheet)
 from .sec import SecError
 from .evaluation import comparison_command
+from .memo import memo_command
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -29,7 +30,7 @@ def facts_path(root: Path, command: str, explicit: Path | None) -> Path:
     if explicit is not None:
         return explicit
     sec = root / "data/facts/observations.json"
-    if command in {"check", "ratio", "verify-number", "compare-systems"} and sec.exists():
+    if command in {"check", "ratio", "verify-number", "compare-systems", "check-memo"} and sec.exists():
         return sec
     return root / "data/sample/financial_facts.json"
 
@@ -38,7 +39,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="FinCheck: audit a financial claim against filing evidence")
     parser.add_argument("command", choices=["demo", "eval-dev", "prepare-data", "search", "check", "eval-agent-dev",
                                             "facts-report", "ratio", "build-index", "label-retrieval",
-                                            "eval-retrieval", "answer-sheet", "score-answers", "verify-number", "compare-systems"])
+                                            "eval-retrieval", "answer-sheet", "score-answers", "verify-number", "compare-systems",
+                                            "demo-memo", "ingest-memo", "extract-memo", "check-memo"])
     parser.add_argument("text", nargs="?", help="Claim for check, keywords for search, or a sheet for score-answers")
     parser.add_argument("--include-sec", action="store_true",
                         help="Also archive SEC Company Facts, 10-K filings and earnings releases")
@@ -66,11 +68,20 @@ def main() -> int:
     parser.add_argument("--input-price-per-million", type=float)
     parser.add_argument("--output-price-per-million", type=float)
     parser.add_argument("--pricing-date", help="Date of user-supplied model list prices")
+    parser.add_argument("--max-pages",type=int,default=10,help="Memo PDF page limit, up to 50")
+    parser.add_argument("--max-claims",type=int,default=12,help="Memo extraction claim limit")
+    parser.add_argument("--memo-company",help="User-provided document context, explicit page text takes precedence")
+    parser.add_argument("--memo-year",type=int,help="User-provided memo fiscal-year context")
+    parser.add_argument("--memo-model-budget",type=int,default=20,help="Logical model-call budget per extraction or checking stage")
+    parser.add_argument("--memo-tool-budget",type=int,default=36,help="Shared tool budget across memo claims")
+    parser.add_argument("--approve-extracted",action="store_true",help="Confirm that you reviewed the extracted quotes and scope before checking")
     args = parser.parse_args()
     if args.cases is None:
         args.cases = ROOT / ('evals/dev/claims_stage4.jsonl' if args.command == 'compare-systems' else 'evals/dev/claims.jsonl')
     args.facts = facts_path(ROOT, args.command, args.facts)
     load_env(ROOT)
+    if args.command in {'demo-memo','ingest-memo','extract-memo','check-memo'}:
+        return memo_command(args,parser,ROOT)
     if args.command == "prepare-data":
         try:
             result = prepare(ROOT, args.include_sec)

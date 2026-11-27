@@ -1,2 +1,3 @@
-# No third-party runtime dependencies for the check-in prototype.
-# Uses Python 3.10+ standard library and Gemini REST API.
+# Core claim checks use Python 3.10+ standard library and Gemini REST API.
+# This pinned dependency enables PDF ingestion and page images.
+PyMuPDF==1.26.7

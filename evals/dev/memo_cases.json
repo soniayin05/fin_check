@@ -1,0 +1,12 @@
+{
+  "split": "dev",
+  "fixture": "demo-memo command: synthetic five-page memo",
+  "note": "Authored development fixture. Not independent human extraction validation or a held-out memo. Gold is never passed to the extractor or verifier.",
+  "claims": [
+    {"page": 1, "quote": "Microsoft revenue was $245.1B in FY2024.", "expected_verdict": "supported"},
+    {"page": 2, "quote": "Microsoft operating profit margin was 44.6% in FY2024.", "expected_verdict": "supported"},
+    {"page": 3, "quote": "Apple diluted earnings per share were $6.08 in FY2024.", "expected_verdict": "supported"},
+    {"page": 4, "quote": "Microsoft revenue was $250B in FY2024.", "expected_verdict": "contradicted"},
+    {"page": 5, "quote": "Microsoft expects revenue to reach $300B in FY2025.", "expected_status": "needs_review", "reason": "Forecast: do not grade using historical reported revenue."}
+  ]
+}

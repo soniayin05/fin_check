@@ -2,15 +2,17 @@
 
 CIS 1990 final project: check financial claims against filing evidence.
 
-**November 24 implementation:** a bounded Gemini agent verifies financial facts, growth, ratios and filing disclosures. A fixed baseline and shared evaluator now compare verdicts, numbers, units, scope and supporting evidence on the same claims. Stage status and remaining work are in `docs/IMPLEMENTATION_STATUS.md`.
+**November 27 implementation:** a bounded Gemini agent verifies financial claims, with a fixed baseline and shared evaluator. The PDF memo workflow now saves page images/text, extracts exact quoted claims and checks approved claims into a JSON/HTML report. Stage status and remaining work are in `docs/IMPLEMENTATION_STATUS.md`.
 
 ## Quick start
 
-Python 3.10+; Python 3.11 recommended. No third-party packages required.
+Python 3.10+; Python 3.11 recommended. Core claim checking uses the standard
+library; PDF commands require the pinned dependency in `requirements.txt`.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 cp .env.example .env  # Only on a fresh clone; preserve an existing .env.
 ```
 
@@ -77,6 +79,13 @@ model calls. Twelve draft development claims are in `evals/dev/claims_stage4.jso
 their new claim variants need review before a frozen evaluation. Results retain
 errors and incomplete runs, repeated runs separately, data/code hashes and traces.
 
+The PDF workflow is documented in `docs/MEMO.md`. Generate a five-page example
+offline with `python3 -m fincheck demo-memo`. `ingest-memo <pdf>` saves page
+text/images; `extract-memo <pdf>` calls Gemini to propose quotations and metadata;
+`check-memo <claims.json>` checks approved entries and prints an HTML report path.
+Review the extracted quotes before using `--approve-extracted`. Forecasts and
+special accounting qualifiers remain flagged for review.
+
 ## Implementation map
 
 | File | Responsibility |
@@ -96,6 +105,7 @@ errors and incomplete runs, repeated runs separately, data/code hashes and trace
 | `fincheck/agent.py` | Plan/tool loop, argument checks, evidence IDs, budgets, trace saving |
 | `fincheck/baseline.py` | Fixed evidence selection and answer pipeline using the same numeric controller |
 | `fincheck/evaluation.py` | Shared scoring, paired comparisons, repeated runs and usage reporting |
+| `fincheck/memo.py` | PDF pages, exact-quote extraction, approval gates, bounded checking and HTML report |
 | `fincheck/__main__.py` | CLI and separate tool/agent development evaluations |
 | `evals/dev/claims.jsonl` | Three claims and predefined grading rules |
 | `docs/CHECK_IN.md` | Wednesday demonstration and submission checklist |
@@ -111,7 +121,7 @@ errors and incomplete runs, repeated runs separately, data/code hashes and trace
 - Retrieval offers keyword, TF-IDF, BM25, embedding and hybrid ranking over chunked filings (`docs/RETRIEVAL.md`). The agent still uses `keyword` by default. Reviewed AI-assisted labels support a preliminary three-method comparison; embedding/hybrid pooling and the answer experiment remain pending.
 - A citation must have been retrieved, and returned growth rates must match the calculation tool. These checks do not prove that the model interpreted every qualifier correctly. Disclosure judgments still need labeled evaluation.
 - `prepare-data --include-sec` archives SEC Company Facts, 10-K filings and earnings releases for Microsoft, Alphabet and Apple and normalizes the numbers (see `docs/DATA.md`). Local SEC observations have been exercised through the numeric tools and a small live smoke check. Broader source reconciliation and earnings-release validation remain pending.
-- No reviewer agent, memo segmentation, GUI, held-out comparison, or completed feature credit yet. Baseline/evaluation infrastructure is implemented; small development smoke runs do not establish final accuracy.
+- No reviewer agent, GUI, held-out comparison, or completed feature credit yet. PDF extraction and baseline/evaluation infrastructure are implemented; extraction coverage, qualifier preservation and full comparison still need evaluation. Scans and charts require visual/OCR review.
 - Traces record model usage when supplied and leave dollar cost unavailable until pricing is configured. Raw traces include user claims and filing text; review them before sharing.
 
 The planned F1/F3/F4/F7 features are still the later project scope. See the docs for the staged implementation plan.
