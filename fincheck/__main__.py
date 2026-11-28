@@ -17,7 +17,7 @@ from .model import Gemini, ModelError, load_env
 from .ratios import RATIOS, UnknownRatio, compute_ratio, growth
 from .embeddings import gemini_embedder
 from .retrieval import METHODS, PassageStore, RetrievalError
-from .retrieval_eval import (answer_sheet, available_methods, evaluate, format_table, index_sha256, label,
+from .retrieval_eval import (answer_cases, answer_sheet, available_methods, evaluate, format_table, index_sha256, label,
                              load_questions, score_sheet)
 from .sec import SecError
 from .evaluation import comparison_command
@@ -42,7 +42,7 @@ def main() -> int:
                                             "eval-retrieval", "answer-sheet", "score-answers", "verify-number", "compare-systems",
                                             "demo-memo", "ingest-memo", "extract-memo", "check-memo",
                                             "check-workflow", "eval-faults", "traces", "export-traces", "serve", "freeze-eval"])
-    parser.add_argument("text", nargs="?", help="Claim for check, keywords for search, or a sheet for score-answers")
+    parser.add_argument("text", nargs="?", help="Claim for check, keywords for search, or an answer sheet path")
     parser.add_argument("--include-sec", action="store_true",
                         help="Also archive SEC Company Facts, 10-K filings and earnings releases")
     parser.add_argument("--company", default="MSFT", help="Ticker or company name (search, ratio, facts-report)")
@@ -53,8 +53,11 @@ def main() -> int:
     parser.add_argument("--methods", help="Comma-separated methods for eval-retrieval / label-retrieval")
     parser.add_argument("-k", type=int, default=5, help="Passages returned or scored (search, eval-retrieval)")
     parser.add_argument("--questions", type=Path, default=ROOT / "evals/retrieval/questions.jsonl")
-    parser.add_argument("--only", help="label-retrieval: (re)label just this question ID")
+    parser.add_argument("--only", help="Limit label-retrieval or answer-sheet to one question ID")
     parser.add_argument("--labeler", default="", help="label-retrieval: your name, stored with each label")
+    parser.add_argument("--review-new", action="store_true", help="Review additions to existing retrieval labels")
+    parser.add_argument("--cached-embeddings", action="store_true", help="Require cached vectors without making embedding API calls")
+    parser.add_argument("--resume", action="store_true", help="Resume answer-sheet at the supplied CSV path")
     parser.add_argument("--facts", type=Path, help="Facts JSON. check/ratio/verify-number use SEC data when present")
     parser.add_argument("--operation", choices=["fact", "growth", "ratio"], default="fact")
     parser.add_argument("--measure", help="Metric or ratio name for verify-number")
@@ -138,7 +141,8 @@ def main() -> int:
     if args.command in {"search", "build-index", "label-retrieval", "eval-retrieval", "answer-sheet",
                         "check", "eval-agent-dev", "compare-systems", "check-workflow", "eval-faults"}:  # offline commands never depend on embedding settings
         try:
-            embedder = gemini_embedder(ROOT) if not args.dry_run else None
+            if not args.dry_run or args.cached_embeddings:
+                embedder = gemini_embedder(ROOT, cache_only=args.cached_embeddings)
         except ModelError as error:
             print(str(error))
             return 1
@@ -317,7 +321,7 @@ def retrieval_command(args, parser, passages: PassageStore, index_path: Path) ->
     if args.command == "label-retrieval":
         questions = load_questions(args.questions)
         count = label(passages, questions, args.questions, index_path, methods, only=args.only,
-                      labeler=args.labeler)
+                      labeler=args.labeler, review_new=args.review_new)
         remaining = sum(1 for q in questions if not q["relevant_ids"] and q.get("status") != "no_relevant_passage")
         print(f"Labeled {count} question(s); {remaining} still unlabeled. Saved to {args.questions}")
         return 0
@@ -341,10 +345,24 @@ def retrieval_command(args, parser, passages: PassageStore, index_path: Path) ->
         return 0
     if args.command == "answer-sheet":
         method = args.method or passages.default_method
-        target = ROOT / "artifacts/local" / f"answers-{method}-{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}.csv"
+        questions = answer_cases(passages, load_questions(args.questions), args.only)
+        if args.dry_run:
+            print(json.dumps({"method": method, "question_ids": [q["id"] for q in questions],
+                              "questions": len(questions), "planned_model_calls": 2 * len(questions),
+                              "model_calls_made": 0}, indent=2))
+            return 0
+        if args.resume and not args.text:
+            parser.error("--resume requires the answer sheet CSV path")
+        target = (Path(args.text) if args.text else
+                  ROOT / "artifacts/local" / f"answers-{method}-{datetime.now(timezone.utc):%Y%m%dT%H%M%S%fZ}.csv")
+        if target.suffix.lower() != ".csv":
+            parser.error("Use a .csv answer sheet path")
         target.parent.mkdir(parents=True, exist_ok=True)
-        print(json.dumps(answer_sheet(passages, load_questions(args.questions), Gemini(), method, target, args.k),
-                         indent=2))
+        report = answer_sheet(passages, questions, Gemini(), method, target, args.k, resume=args.resume)
+        print(json.dumps(report, indent=2))
+        if report["status"] != "complete":
+            print("Completed answers are saved. Continue with answer-sheet and the same CSV path plus --resume.")
+            return 1
         print("Grade each row by hand: 1 = matches expected_answer, 0 = wrong, missing or unsupported. "
               "Then run: python -m fincheck score-answers <sheet>")
         return 0

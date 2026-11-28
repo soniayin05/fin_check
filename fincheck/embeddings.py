@@ -181,10 +181,10 @@ def gemini_transport(key: str, model: str, dim: int, min_interval: float = 0.5):
     return send
 
 
-def gemini_embedder(root: Path) -> Embedder | None:
+def gemini_embedder(root: Path, *, cache_only: bool = False) -> Embedder | None:
     """The configured embedder, or None when no API key is set."""
     key = os.getenv("GEMINI_API_KEY", "")
-    if not key:
+    if not key and not cache_only:
         return None
     model = os.getenv("GEMINI_EMBED_MODEL") or DEFAULT_MODEL
     try:
@@ -194,4 +194,9 @@ def gemini_embedder(root: Path) -> Embedder | None:
     if not 64 <= dim <= 3072:
         raise ModelError("GEMINI_EMBED_DIM must be between 64 and 3072")
     cache = EmbeddingCache(root / "data/indexes/embeddings", model, dim)
-    return Embedder(gemini_transport(key, model, dim), cache, model, dim)
+    if cache_only:
+        def transport(texts, titles, task):
+            raise ModelError(f"Missing {len(texts)} cached vectors for {task}. Populate the embedding cache first.")
+    else:
+        transport = gemini_transport(key, model, dim)
+    return Embedder(transport, cache, model, dim)

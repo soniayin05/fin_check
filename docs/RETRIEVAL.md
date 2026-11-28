@@ -38,8 +38,7 @@ with an error and never switch to another method.
 3. Review and edit `evals/retrieval/questions.jsonl` (see below).
 4. `python -m fincheck label-retrieval --labeler "Your Name"`
 5. `python -m fincheck eval-retrieval`
-6. Optional answer experiment: `python -m fincheck answer-sheet --method <best>`,
-   grade the CSV by hand, then `python -m fincheck score-answers <csv>`.
+6. Compare answers with and without retrieval. See **Answer experiment** below.
 
 `eval-retrieval` prints, per method, top-5 hit rate with a 95% Wilson
 interval, MRR@5, recall@5 and per-query latency. For each pair of methods it
@@ -71,8 +70,8 @@ no method returned.
 
 - Mark a chunk relevant if it alone states the answer or the key fact needed.
 - A chunk that only mentions the topic is not relevant.
-- Mark every relevant chunk, including the same text in the 10-K and in the
-  annual report web page.
+- Mark every relevant chunk within the source type requested by the question.
+  Use `f <number>` to read a complete candidate.
 - Enter `n` if no chunk answers the question. Such questions are reported but
   not scored.
 - The optional expected answer is a short reference for the answer experiment.
@@ -84,6 +83,53 @@ label problems instead of counting them as misses; relabel them with
 
 Labels are made on development data. Questions inspected while choosing the
 retrieval method are not held-out cases.
+
+### Review newly retrieved passages
+
+With document and query vectors cached, run:
+
+```bash
+python3 -m fincheck label-retrieval --review-new --cached-embeddings --labeler "Your Name"
+```
+
+This shows candidates beyond the existing lexical review in rank order. Enter
+the numbers of relevant additions or `n` if none of the new candidates answers
+the question. This mode saves the human review alongside the old labels. It
+skips already reviewed pools on the next run. Use `q` to stop or
+`--only rq-07` to revisit a single question. Then rerun the comparison:
+
+```bash
+python3 -m fincheck eval-retrieval --cached-embeddings
+```
+
+Both commands use the saved vectors. A missing vector stops the command with
+an error.
+
+### Answer experiment
+
+After reviewing the labels and reference answers, preview the model call
+count and then generate answers on the same questions:
+
+```bash
+python3 -m fincheck answer-sheet --method embedding --cached-embeddings --dry-run
+python3 -m fincheck answer-sheet --method embedding --cached-embeddings
+```
+
+The experiment uses one model call per condition per question. It alternates
+which condition goes first and keeps reference answers out of model prompts.
+Questions marked as having no relevant passage are excluded.
+
+The command prints the CSV path and saves a companion `.run.json` with each
+answer, the retrieved passages, token usage, timing and any interruption.
+If interrupted, rerun `answer-sheet "<saved CSV path>" --resume --method
+embedding --cached-embeddings`. It skips answers already saved for the same
+questions, model and evidence.
+
+In the CSV, enter `1` or `0` in each grade column. Check the answer against the
+reference and confirm that any citations in the retrieval condition point to
+passages supporting the answer. Grade a wrong, missing or unsupported answer
+as `0`. Run `python3 -m fincheck score-answers "<saved CSV path>"` for paired
+accuracy and uncertainty.
 
 ### Measurement boundaries
 
