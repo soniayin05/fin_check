@@ -286,6 +286,9 @@ def render_report(target,memo,result,ingest_dir):
         image=os.path.relpath(ingest_dir/f"pages/page-{page_number:03d}.png",target) if valid_page else ''
         value=output.get('verified_value')
         verified='' if value is None else f"Verified: {value} {output.get('verified_unit','')}"
+        reason=output.get('explanation') or output.get('reason','')
+        if result.get('system') == 'manual_offline' and output.get('formula'):
+            reason=' '.join(filter(None, (reason, f"Formula: {output['formula']}.")))
         evidence=''
         for key,source in output.get('sources',{}).items():
             url=source.get('url','')
@@ -302,9 +305,13 @@ def render_report(target,memo,result,ingest_dir):
         sections.append('<article><h2>'+escape(str(item.get('claim_id','invalid claim')))+' — page '+escape(str(page_number))+
             '</h2><blockquote>'+escape(str(item.get('quote','')))+'</blockquote><p>'+escape(row['status'])+
             ': '+escape(output.get('verdict',row.get('reason','')))+
-            '</p><p>'+escape(verified)+'</p><p>'+escape(output.get('explanation',''))+
+            '</p><p>'+escape(verified)+'</p><p>'+escape(reason)+
             '</p><ul>'+evidence+'</ul>'+('<a href="'+escape(image,quote=True)+'">View source page</a>' if image else '<p>Source page unavailable</p>')+'</article>')
     download='<p><a href="annotated-memo.pdf">Download annotated PDF</a></p>' if (target/'annotated-memo.pdf').exists() else ''
+    if result.get('system') == 'manual_offline':
+        download += ('<p>Offline numeric checks · Zero model calls · Claim revision '
+                     + str(result['claim_revision']) + '</p><p>' + escape(result['note'])
+                     + '</p><p><a href="report.json">Download JSON report</a></p>')
     html='''<!doctype html><html lang="en"><meta charset="utf-8"><title>FinCheck memo review</title>
 <style>body{font:16px system-ui;max-width:960px;margin:40px auto;padding:0 24px;color:#182537}
 article{border:1px solid #cbd5e1;padding:20px;margin:20px 0;break-inside:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere}details{margin:10px 0}

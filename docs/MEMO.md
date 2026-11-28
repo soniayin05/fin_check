@@ -21,6 +21,27 @@ commands still work without PyMuPDF. Page text/image methods follow the
 [PyMuPDF documentation](https://pymupdf.readthedocs.io/en/latest/page.html).
 Keep GEMINI_API_KEY and GEMINI_MODEL in this checkout's `.env` for live commands.
 
+## Review and check a memo offline
+
+Start `python3 -m fincheck serve` and open `http://127.0.0.1:8765`.
+Under **PDF memo workflow**, select **Enter claims manually (offline)** and
+open the PDF. Pick a page and select text to copy complete source lines into
+the quote field. Compare the quotation and its qualifiers with the image.
+Save the claim or edit it from the saved list. The claim file stores each
+revision with its prior and updated entry. Saving an edit clears the current
+selection. Open the claim file from the page to see the revision history.
+
+For a historical annual figure for the entire company, enter its ticker,
+fiscal year (for example FY2024), metric, complete numeric literal, unit and
+calculation type. Select the reviewed claims, confirm their scope and run
+**Cached numeric check (offline)**. Forecasts, special accounting qualifiers
+and entries missing calculation fields stay flagged for review. The reviewer's
+confirmation covers details the quote parser cannot reliably infer, including
+segment scope, the unit and whether the quote makes a single assertion.
+The report links the page and cached evidence and appears in **Saved reports**.
+It records the revision, facts snapshot and zero model calls. Choose one of
+the Gemini verification modes when you need model-assisted interpretation.
+
 ## Commands
 
 Generate the synthetic five-page development PDF without an API call:
