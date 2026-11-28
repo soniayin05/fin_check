@@ -4,6 +4,10 @@ CIS 1990 final project: check financial claims against filing evidence.
 
 **November 27 implementation:** capability-scoped planning, evidence work and read-only review now verify financial claims with a shared budget and bounded repairs. A local upload interface connects PDF extraction, claim review and JSON/HTML/annotated-PDF results. Single-agent and fixed-baseline references remain available. See `docs/WORKFLOW.md` and `docs/IMPLEMENTATION_STATUS.md`.
 
+**November 28:** the local interface now includes cached numeric checks and a
+saved-report browser that work without Gemini or an API key. See `docs/OFFLINE.md`
+for examples and `docs/PROGRESS_2026-11-28.md` for progress and next stages.
+
 ## Quick start
 
 Python 3.10+; Python 3.11 recommended. Core claim checking uses the standard
@@ -96,6 +100,9 @@ python3 -m fincheck serve
 Open http://127.0.0.1:8765. Optional supplementary PDFs are explicitly marked
 user-supplied. Official numeric coverage can be expanded with explicit SEC
 tickers, subject to tag coverage and source reconciliation. See `docs/WORKFLOW.md`.
+Use **Check a number offline** for direct fact/growth/ratio checks and **Saved
+reports** to reopen prior results without model calls. Restart an older server
+to load the updated interface. PDF extraction and agent review still use Gemini.
 
 ```bash
 python3 -m fincheck check-workflow 'Microsoft revenue was $245.1B in FY2024.'

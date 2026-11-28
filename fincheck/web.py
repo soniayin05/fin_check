@@ -17,6 +17,7 @@ from .model import Gemini,load_env
 from .retrieval import PassageStore
 from .tools import FactStore
 from .uploads import supplementary_pdf
+from .offline import catalog,numeric_check,history,history_directories
 
 MAX_BODY=42*1024*1024
 
@@ -49,6 +50,27 @@ class Application:
 
     def update(self,identifier,**values):
         with self.lock:self.jobs[identifier].update(values)
+
+    def offline_check(self,payload):
+        with self.lock:
+            if len(self.jobs)>=20:raise ValueError('Session limit reached; restart the local application')
+            target,report=numeric_check(self.root,payload)
+            identifier=secrets.token_hex(16)
+            self.jobs[identifier]=dict(id=identifier,artifact=target.name,status='done',mode='offline_numeric',
+                message='Completed from cached observations without model calls.',directory=target,allowed=[target],
+                report=report,report_url=f'/assets/{identifier}/{target.name}/report.html')
+        return self.snapshot(identifier)
+
+    def open_history(self,payload):
+        if not isinstance(payload,dict) or set(payload)!={'id'}:raise ValueError('Supply a saved report ID')
+        with self.lock:
+            if len(self.jobs)>=20:raise ValueError('Session limit reached; restart the local application')
+            target,report,allowed=history_directories(self.root,payload['id'])
+            identifier=secrets.token_hex(16)
+            self.jobs[identifier]=dict(id=identifier,artifact=target.name,status='done',mode='saved_report',
+                message='Saved result opened; no extraction or verification was rerun.',directory=target,allowed=allowed,
+                report=report,report_url=f'/assets/{identifier}/{target.name}/report.html')
+        return dict(id=identifier,report_url=f'/assets/{identifier}/{target.name}/report.html')
 
     def upload(self,fields):
         pdf=fields.get('memo')
@@ -102,7 +124,8 @@ class Application:
             raise ValueError('Invalid approved claims/system')
         with self.lock:
             job=self.jobs.get(identifier)
-            if not job or job['status'] not in {'review','done'}:raise ValueError('Wait for extraction before checking')
+            if not job or job['status'] not in {'review','done'} or job.get('bundle') is None:
+                raise ValueError('Select a freshly extracted memo before checking')
             if self.busy:raise ValueError('A task is already running')
             bundle=deepcopy(job['bundle']);directory=job['directory'];passages=job['passages']
             if not approved or set(approved)-{c['claim_id'] for c in bundle['claims']}:
@@ -152,6 +175,10 @@ def handler(application,port):
             parts=urlsplit(self.path).path.split('/')
             try:
                 if self.path=='/':self.respond(200,HTML.replace('__TOKEN__',application.token),'text/html; charset=utf-8')
+                elif self.path in {'/api/catalog','/api/history'}:
+                    if self.headers.get('X-Fincheck-Token')!=application.token:
+                        self.respond(403,{'error':'Local session authentication required'});return
+                    self.respond(200,catalog(application.root) if self.path=='/api/catalog' else {'reports':history(application.root)})
                 elif len(parts)==4 and parts[1:3]==['api','jobs']:self.respond(200,application.snapshot(parts[3]))
                 elif len(parts)>=5 and parts[1]=='assets':
                     # Reports link ../other-artifact/pages/...; normalize inside the session, never across it.
@@ -175,6 +202,8 @@ def handler(application,port):
                 if self.path=='/api/upload':
                     identifier=application.upload(multipart(self.headers.get('Content-Type',''),body))
                     self.respond(202,{'id':identifier})
+                elif self.path=='/api/offline-check':self.respond(201,application.offline_check(json.loads(body)))
+                elif self.path=='/api/history/open':self.respond(200,application.open_history(json.loads(body)))
                 elif self.path.startswith('/api/check/'):
                     application.check(self.path.rsplit('/',1)[1],json.loads(body));self.respond(202,{'started':True})
                 else:self.respond(404,{'error':'Not found'})
@@ -201,7 +230,17 @@ HTML='''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewpor
 <title>FinCheck</title><style>
 body{margin:0;background:#f6f8fb;color:#17283d;font:16px system-ui}main{max-width:1000px;margin:48px auto;padding:0 24px}h1{font-size:36px;margin-bottom:8px}
 .card{background:white;border:1px solid #dbe3ee;border-radius:12px;padding:24px;margin:22px 0}label{display:block;margin:14px 0 5px}input,select,button{font:inherit;padding:9px;max-width:100%;box-sizing:border-box}button{border:0;border-radius:6px;background:#155ac0;color:white;cursor:pointer;margin-top:18px}button:disabled{opacity:.5;cursor:wait}.hint{color:#52657a;font-size:14px}blockquote{white-space:pre-wrap;margin:12px 0;padding:12px;background:#f1f5fa}.claim{border-top:1px solid #dbe3ee;padding:18px 0}.claim label{display:flex;gap:12px}.status{font-weight:600}a{color:#155ac0}.error{color:#a12727}
-</style><main><h1>FinCheck</h1><p>Check the financial claims in a PDF memo against source evidence.</p>
+</style><main><h1>FinCheck</h1><p>Check financial claims against cached source evidence.</p>
+<section class="card"><h2>Check a number offline</h2><p class="hint">Works without Gemini or an API key. Enter one historical, company-wide numeric claim. The fields you enter are checked directly; natural-language meaning, segment figures and forecasts need separate review.</p>
+<p id="coverage" class="hint">Loading cached coverage...</p>
+<form id="offline"><label for="offline-company">Company ticker</label><input id="offline-company" name="company" list="cached-companies" value="MSFT" maxlength="40" required><datalist id="cached-companies"></datalist>
+<label for="offline-year">Fiscal year</label><input id="offline-year" name="year" type="number" min="1900" max="2100" step="1" value="2024" required>
+<label for="offline-operation">Check type</label><select id="offline-operation" name="operation"><option value="fact">Reported annual value</option><option value="growth">Year-over-year growth</option><option value="ratio">Financial ratio</option></select>
+<label for="offline-measure">Measure</label><select id="offline-measure" name="measure" required></select>
+<label for="offline-value">Claimed value (keep the written precision)</label><input id="offline-value" name="claimed_value" value="245.1" inputmode="decimal" maxlength="64" required>
+<label for="offline-unit">Unit</label><select id="offline-unit" name="unit" required></select>
+<button id="offline-submit" disabled>Check cached data</button></form><p id="offline-message" role="status"></p><div id="offline-result" hidden></div></section>
+<h2>PDF memo workflow · Gemini required</h2>
 <form id="upload" class="card"><h2>1. Extract claims</h2><label>Memo PDF (up to 10 pages, 20 MiB)</label><input type="file" name="memo" accept="application/pdf" required>
 <p class="hint">Extraction sends page text to your configured Gemini API. Files and reports are stored locally. Charts and scans need visual review.</p>
 <details><summary>Optional context and supplementary evidence</summary><label>Memo company/ticker hint</label><input name="context_company" placeholder="e.g. MSFT"><label>Memo fiscal-year hint</label><input name="context_year" type="number" placeholder="2024">
@@ -211,6 +250,7 @@ body{margin:0;background:#f6f8fb;color:#17283d;font:16px system-ui}main{max-widt
 <label>Verification mode</label><select id="system"><option value="multi">Access-scoped evidence and read-only review</option><option value="agent">Single agent</option></select>
 <p class="hint">Shared verification cap: 40 logical model requests and 60 tool calls. Each claim is capped at 12 model turns and 12 tool calls. API quota may be used.</p><button id="check">Check selected claims</button></section>
 <section id="results" class="card" hidden><h2>3. Results</h2><div id="rows"></div><p id="report"></p></section>
+<section class="card"><h2>Saved reports</h2><p class="hint">Open previous results without extraction, verification or model calls. Saved reports keep their original data snapshot.</p><button id="history-refresh" type="button">Refresh reports</button><p id="history-message" role="status"></p><div id="history-list"></div></section>
 <p class="hint">Built-in SEC coverage: Microsoft, Apple and Alphabet. Missing evidence, execution failures and review flags are reported separately. This tool checks factual consistency; it does not recommend investments.</p></main>
 <script>
 const token='__TOKEN__';let job=null,timer=null;const $=id=>document.getElementById(id);
@@ -220,4 +260,15 @@ $('upload').onsubmit=async e=>{e.preventDefault();$('extract').disabled=true;mes
 function showClaims(d){$('claims').replaceChildren();for(let c of d.claims){let box=node('div','',$('claims'));box.className='claim';let label=node('label','',box);let input=document.createElement('input');input.type='checkbox';input.value=c.claim_id;label.append(input);node('span','Page '+c.page+' · '+c.company+' · '+c.period,label);node('blockquote',c.quote,box);node('p','Metric: '+c.metric+' | Value: '+(c.value??'not specified')+' | Unit: '+c.unit,box);if(c.review_reasons.length)node('p','Needs review: '+c.review_reasons.join(', '),box);let a=node('a','View source page',box);a.href='/assets/'+job+'/'+d.artifact+'/pages/page-'+String(c.page).padStart(3,'0')+'.png';a.target='_blank'}$('review').hidden=false}
 async function poll(){try{let d=await request('/api/jobs/'+job);message(d.message);if(d.status==='extracting'||d.status==='checking'){timer=setTimeout(poll,1500);return}$('extract').disabled=false;$('check').disabled=false;if(d.status==='review'){showClaims(d);if(d.issues.length||d.page_warnings.length)message(d.message+' Extraction/page warnings: '+JSON.stringify([...d.issues,...d.page_warnings]));}if(d.status==='done'){$('rows').replaceChildren();for(let r of d.report.rows){let p=node('div','',$('rows'));p.className='claim';node('blockquote',r.claim.quote,p);node('p',r.status+' · '+(r.result?.verdict||r.reason||''),p);if(r.result?.explanation)node('p',r.result.explanation,p);if(r.result?.sources)node('p','Evidence: '+Object.keys(r.result.sources).join(', '),p)}$('report').replaceChildren();let a=node('a','Open report and source-page links',$('report'));a.href=d.report_url;a.target='_blank';$('results').hidden=false}}catch(e){message(e.message);$('extract').disabled=false;$('check').disabled=false}}
 $('check').onclick=async()=>{let approved_ids=[...$('claims').querySelectorAll('input:checked')].map(e=>e.value);if(!approved_ids.length){message('Select at least one reviewed claim.');return}$('check').disabled=true;try{await request('/api/check/'+job,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({approved_ids,system:$('system').value})});poll()}catch(e){message(e.message);$('check').disabled=false}};
+const unitLabels={USD:'USD (dollars)',USD_thousands:'USD (thousands)',USD_millions:'USD (millions)',USD_billions:'USD (billions)',shares:'Shares',shares_millions:'Shares (millions)','USD/shares':'USD per share','%':'Percent','x':'Times','days':'Days'};let offlineCatalog=null;
+function outcomeLabel(value){let label=String(value||'Unknown').replaceAll('_',' ');return label[0].toUpperCase()+label.slice(1)}
+function modeLabel(value){return {offline_numeric:'Offline numeric check',multi:'Scoped verification',agent:'Single agent',memo:'Memo verification'}[value]||'Saved verification'}
+function dateLabel(value){let date=new Date(value);return Number.isNaN(date.getTime())?'Unknown creation time':date.toISOString().slice(0,19).replace('T',' ')+' UTC'}
+function suggestedUnit(){if(!offlineCatalog)return;let operation=$('offline-operation').value,items=operation==='ratio'?offlineCatalog.ratios:offlineCatalog.metrics;let selected=items.find(x=>x.name===$('offline-measure').value);let unit=operation==='growth'?'%':selected?.unit;if(operation==='fact'&&unit==='USD')unit='USD_billions';if(operation==='fact'&&unit==='shares')unit='shares_millions';if(unit)$('offline-unit').value=unit}
+function measures(){if(!offlineCatalog)return;let operation=$('offline-operation').value,items=operation==='ratio'?offlineCatalog.ratios:offlineCatalog.metrics;$('offline-measure').replaceChildren();for(let item of items){let option=node('option',item.label||item.name.replaceAll('_',' '),$('offline-measure'));option.value=item.name}$('offline-measure').value=operation==='ratio'?'operating_profit_margin':'revenue';suggestedUnit()}
+async function loadCatalog(){try{offlineCatalog=await request('/api/catalog');$('coverage').textContent='Cached coverage: '+offlineCatalog.companies.map(c=>c.ticker+' (FY'+c.years.join(', ')+')').join('; ')+'. Missing periods are reported as insufficient evidence.';for(let company of offlineCatalog.companies){let option=node('option',company.ticker,$('cached-companies'));option.value=company.ticker}for(let unit of offlineCatalog.units){let option=node('option',unitLabels[unit]||unit,$('offline-unit'));option.value=unit}measures();$('offline-submit').disabled=false}catch(error){$('coverage').textContent=error.message}}
+$('offline-operation').onchange=measures;$('offline-measure').onchange=suggestedUnit;
+$('offline').onsubmit=async event=>{event.preventDefault();$('offline-submit').disabled=true;$('offline-message').textContent='Checking cached observations...';$('offline-result').hidden=true;try{let payload=Object.fromEntries(new FormData(event.target));payload.year=Number(payload.year);let saved=await request('/api/offline-check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});let result=saved.report.result;let box=$('offline-result');box.replaceChildren();node('h3',outcomeLabel(result.verdict),box);node('p',result.verified_value==null?(result.reason||'Evidence is incomplete in the loaded snapshot.'):'Verified '+Number(result.verified_value.toPrecision(10))+' '+result.verified_unit+'; claimed '+payload.claimed_value+' '+payload.unit+'.',box);node('p','Formula: '+(result.formula||'unavailable'),box);node('p','Observations: '+(result.observations||[]).map(o=>o.id+' ['+o.period_start+' to '+o.period_end+']').join('; '),box);if(result.assumptions?.length)node('p','Assumptions: '+result.assumptions.join('; '),box);let link=node('a','Open calculation, source evidence and JSON report',box);link.href=saved.report_url;link.target='_blank';link.rel='noopener';box.hidden=false;$('offline-message').textContent='Saved offline numeric check. Zero model calls.';loadHistory()}catch(error){$('offline-message').textContent=error.message}finally{$('offline-submit').disabled=false}};
+async function loadHistory(){try{let data=await request('/api/history');$('history-list').replaceChildren();$('history-message').textContent=data.reports.length?data.reports.length+' saved reports (newest first).':'No saved reports yet.';for(let report of data.reports){let row=node('div','',$('history-list'));row.className='claim';node('p',report.title+' · '+outcomeLabel(report.status)+' · '+modeLabel(report.mode),row);node('p',dateLabel(report.created_at),row);if(report.snapshot_matches_current===false)node('p','Data snapshot changed since this report was created.',row);let button=node('button','Open saved result',row);button.type='button';button.onclick=async()=>{button.disabled=true;try{let opened=await request('/api/history/open',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:report.id})});let link=node('a','View saved report',row);link.href=opened.report_url;link.target='_blank';link.rel='noopener';button.remove();link.click()}catch(error){$('history-message').textContent=error.message;button.disabled=false}}}}catch(error){$('history-message').textContent=error.message}}
+$('history-refresh').onclick=loadHistory;loadCatalog();loadHistory();
 </script></html>'''

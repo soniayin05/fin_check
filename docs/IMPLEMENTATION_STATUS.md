@@ -1,6 +1,6 @@
 # Implementation stages
 
-Status as of November 27, 2026. The active GitHub checkout on Sonia's Mac is
+Status as of November 28, 2026. The active GitHub checkout on Sonia's Mac is
 `/Users/soniayin/Desktop/CIS 1990 Final Project/fin_check`. The containing folder
 has an older checkout with separate Git state and configuration.
 
@@ -14,9 +14,11 @@ has an older checkout with separate Git state and configuration.
 | Reviewer workflow | Implemented: capability permissions, original-source reads, shared budgets/repairs; full development comparison recorded | Review gold and complete the final frozen evaluation; development results do not show a multi-agent advantage |
 | Recovery and observability experiments | Implemented: fifteen faults, recovery policy, case/scope/tool trace search and redacted export; full fault and prefetch contrast recorded | Final reporting; observed call reduction did not establish latency or quality gains |
 | Local interface | Implemented: PDF upload, claim approval, single/scoped checking, supplementary sources and annotated PDF | User acceptance/visual review and independent memo evaluation |
+| Offline mode and report history | Implemented: cached fact/growth/ratio form, persisted JSON/HTML, snapshot notices and safe reopening of memo/source pages; 145 tests and isolated-browser checks pass | Manual claim editor and independent memo-level development labels |
 | Final evaluation and delivery | Freeze and guarded held-out commands implemented; final evaluation pending | Independently reviewed gold, final freeze, held-out run, interface/demo and write-up |
 
 November 27 evidence is documented in `docs/DEVELOPMENT_2026-11-27.md`.
+November 28 progress and planned acceptance stages are in `docs/PROGRESS_2026-11-28.md`.
 The full initial comparison passed baseline 10/12, single agent 8/12 and scoped
 workflow 7/12; later fixes and targeted reruns are kept separately. The fault
 batch passed 11/15 with planning/recovery and 0/15 with both disabled. Three
